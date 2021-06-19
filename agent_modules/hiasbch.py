@@ -33,7 +33,6 @@ Contributors:
 """
 
 import json
-import sys
 import time
 
 from requests.auth import HTTPBasicAuth
@@ -61,7 +60,7 @@ class hiasbch():
 
 		self.w3 = Web3(Web3.HTTPProvider(self.core_confs["hiasbch"]["bchost"], request_kwargs={
 						'auth': HTTPBasicAuth(self.core_confs["iotJumpWay"]["mqtt"]["agent"]["identifier"],
-											self.core_confs["iotJumpWay"]["mqtt"]["agent"]["auth"])}))
+												self.core_confs["iotJumpWay"]["mqtt"]["agent"]["auth"])}))
 		self.authContract = self.w3.eth.contract(self.w3.toChecksumAddress(self.core_confs["hiasbch"]["authContract"]),
 											abi=json.dumps(self.core_confs["hiasbch"]["authAbi"]))
 		self.iotContract = self.w3.eth.contract(self.w3.toChecksumAddress(self.core_confs["hiasbch"]["iotContract"]),
@@ -73,8 +72,8 @@ class hiasbch():
 	def iotJumpWayAccessCheck(self, address):
 		""" Checks sender is allowed access to the iotJumpWay Smart Contract """
 
-		if not self.iotContract.functions.accessAllowed(self.w3.toChecksumAddress(address)).call({
-														'from': self.w3.toChecksumAddress(self.core_confs["hiasbch"]["iaddress"])}):
+		if not self.iotContract.functions.accessAllowed(self.w3.toChecksumAddress(address)).call(
+			{'from': self.w3.toChecksumAddress(self.core_confs["hiasbch"]["iaddress"])}):
 			return False
 		else:
 			return True
