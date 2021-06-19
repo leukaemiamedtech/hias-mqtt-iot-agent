@@ -32,11 +32,11 @@ Contributors:
 
 """
 
-import joblib
+from gevent import monkey
+monkey.patch_all()
+
 import json
 import os
-import os.path
-import pickle
 import psutil
 import requests
 import signal
@@ -44,17 +44,18 @@ import sys
 import time
 import threading
 
+import os.path
+sys.path.append(
+	os.path.abspath(os.path.join(__file__,  "..", "..", "..", "..")))
+
 from abc import ABC, abstractmethod
-from threading import Thread
-from flask import Flask, request, Response
-from datetime import timedelta
 from datetime import datetime
+from datetime import timedelta
+from flask import Flask, request, Response
+from threading import Thread
 
 from components.agents.AbstractAgent import AbstractAgent
 
-
-sys.path.append(
-	os.path.abspath(os.path.join(__file__,  "..", "..", "..", "..")))
 
 class Agent(AbstractAgent):
 	""" Class representing a HIAS iotJumpWay MQTT IoT Agent.
@@ -63,6 +64,9 @@ class Agent(AbstractAgent):
 	process all data coming from entities connected to the HIAS iotJumpWay
 	broker using the MQTT & Websocket machine to machine protocols.
 	"""
+
+	def __init__(self, protocol):
+		super().__init__(protocol)
 
 	def statusCallback(self, topic, payload):
 		"""Called in the event of a status payload
@@ -80,10 +84,15 @@ class Agent(AbstractAgent):
 		else:
 			entityType = splitTopic[1]
 
-		self.helpers.logger.info(
-			"Received " + entityType + " Status: " + status)
+		if entityType in ["Robotics", "Application", "Staff"]:
+			entity = splitTopic[2]
+		else:
+			entity = splitTopic[3]
 
-		attrs = self.getRequiredAttributes(entityType, splitTopic)
+		self.helpers.logger.info(
+			"Received " + entityType  + " Status")
+
+		attrs = self.getRequiredAttributes(entityType, entity)
 		bch = attrs["blockchain"]
 
 		if not self.hiasbch.iotJumpWayAccessCheck(bch):
@@ -116,6 +125,12 @@ class Agent(AbstractAgent):
 
 			self.helpers.logger.info(
 				entityType + " " + entity + " status update OK")
+
+			self.mqtt.publish("Integrity", {
+				"_id": str(_id),
+				"Status": status
+			})
+
 		else:
 			self.helpers.logger.error(
 				entityType + " " + entity + " status update KO")
@@ -136,10 +151,15 @@ class Agent(AbstractAgent):
 		else:
 			entityType = splitTopic[1]
 
-		self.helpers.logger.info(
-			"Received " + entityType + " Life: " + str(data))
+		if entityType in ["Robotics", "Application", "Staff"]:
+			entity = splitTopic[2]
+		else:
+			entity = splitTopic[3]
 
-		attrs = self.getRequiredAttributes(entityType, splitTopic)
+		self.helpers.logger.info(
+			"Received " + entityType  + " Life")
+
+		attrs = self.getRequiredAttributes(entityType, entity)
 		bch = attrs["blockchain"]
 
 		if not self.hiasbch.iotJumpWayAccessCheck(bch):
@@ -189,6 +209,16 @@ class Agent(AbstractAgent):
 				"Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 			}, None)
 
+			self.mqtt.publish("Integrity", {
+				"_id": str(_id),
+				"CPU": str(data["CPU"]),
+				"Memory": str(data["Memory"]),
+				"Diskspace": str(data["Diskspace"]),
+				"Temperature": str(data["Temperature"]),
+				"Latitude": str(data["Latitude"]),
+				"Longitude": str(data["Longitude"])
+			})
+
 			self.helpers.logger.info(
 				entityType + " " + entity + " life update OK")
 		else:
@@ -211,10 +241,15 @@ class Agent(AbstractAgent):
 		else:
 			entityType = splitTopic[1]
 
-		self.helpers.logger.info(
-			"Received " + entityType + " Sensors Data: " + str(data))
+		if entityType in ["Robotics", "Application", "Staff"]:
+			entity = splitTopic[2]
+		else:
+			entity = splitTopic[3]
 
-		attrs = self.getRequiredAttributes(entityType, splitTopic)
+		self.helpers.logger.info(
+			"Received " + entityType  + " Sensors Data")
+
+		attrs = self.getRequiredAttributes(entityType, entity)
 		bch = attrs["blockchain"]
 
 		if not self.hiasbch.iotJumpWayAccessCheck(bch):
@@ -229,10 +264,10 @@ class Agent(AbstractAgent):
 		sensorData = sensors["sensors"]
 
 		i = 0
-		for sensor in sensorData:
+		for sensor in sensorData["value"]:
 			for prop in sensor["properties"]["value"]:
 				if data["Type"].lower() in prop:
-					sensorData[i]["properties"]["value"][data["Type"].lower()] = {
+					sensorData["value"][i]["properties"]["value"][data["Type"].lower()] = {
 						"value": data["Value"],
 						"timestamp": datetime.now().isoformat()
 					}
@@ -264,6 +299,14 @@ class Agent(AbstractAgent):
 				"Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 			}, None)
 
+			self.mqtt.publish("Integrity", {
+				"_id": str(_id),
+				"Sensor": data["Sensor"],
+				"Type": data["Type"],
+				"Value": data["Value"],
+				"Message": data["Message"]
+			})
+
 			self.helpers.logger.info(
 				entityType + " " + entity + " sensors update OK")
 		else:
@@ -278,17 +321,17 @@ class Agent(AbstractAgent):
 		hdd = psutil.disk_usage('/fserver').percent
 		tmp = psutil.sensors_temperatures()['coretemp'][0].current
 		r = requests.get('http://ipinfo.io/json?token=' +
-				self.helpers.credentials["iotJumpWay"]["ipinfo"])
+					self.helpers.credentials["iotJumpWay"]["ipinfo"])
 		data = r.json()
 		location = data["loc"].split(',')
 
 		self.mqtt.publish("Life", {
-			"CPU": float(cpu),
-			"Memory": float(mem),
-			"Diskspace": float(hdd),
-			"Temperature": float(tmp),
-			"Latitude": float(location[0]),
-			"Longitude": float(location[1])
+			"CPU": str(cpu),
+			"Memory": str(mem),
+			"Diskspace": str(hdd),
+			"Temperature": str(tmp),
+			"Latitude": str(location[0]),
+			"Longitude": str(location[1])
 		})
 
 		self.helpers.logger.info("Agent life statistics published.")
@@ -305,10 +348,8 @@ class Agent(AbstractAgent):
 		self.mqtt.disconnect()
 		sys.exit(1)
 
-
 app = Flask(__name__)
-Agent = Agent()
-
+Agent = Agent("mqtt")
 
 @app.route('/About', methods=['GET'])
 def about():
@@ -327,7 +368,6 @@ def about():
 		"Diskspace": psutil.disk_usage('/').percent,
 		"Temperature": psutil.sensors_temperatures()['coretemp'][0].current
 	})
-
 
 def main():
 
@@ -348,11 +388,14 @@ def main():
 		"up": Agent.credentials["iotJumpWay"]["up"]
 	})
 
+	Agent.mqtt.statusCallback = Agent.statusCallback
+	Agent.mqtt.lifeCallback = Agent.lifeCallback
+	Agent.mqtt.sensorsCallback = Agent.sensorsCallback
+
 	Thread(target=Agent.life, args=(), daemon=True).start()
 
 	app.run(host=Agent.helpers.credentials["server"]["ip"],
 			port=Agent.helpers.credentials["server"]["port"])
-
 
 if __name__ == "__main__":
 	main()
