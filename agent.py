@@ -110,7 +110,8 @@ class Agent(AbstractAgent):
 			})
 
 		if updateResponse:
-			_id = self.mongodb.insertData(self.mongodb.mongoConn.Statuses, {
+
+			_id = self.hiashdi.insertData("Statuses", {
 				"Use": entityType,
 				"Location": location,
 				"Zone": zone,
@@ -121,15 +122,21 @@ class Agent(AbstractAgent):
 				"Staff": entity if entityType == "Staff" else "NA",
 				"Status": status,
 				"Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-			}, None)
-
-			self.helpers.logger.info(
-				entityType + " " + entity + " status update OK")
-
-			self.mqtt.publish("Integrity", {
-				"_id": str(_id),
-				"Status": status
 			})
+
+			if _id != False:
+
+				self.helpers.logger.info(
+					entityType + " " + entity + " status update OK")
+
+				self.mqtt.publish("Integrity", {
+					"_id": str(_id),
+					"Status": status
+				})
+
+			else:
+				self.helpers.logger.error(
+				entityType + " " + entity + " status update KO")
 
 		else:
 			self.helpers.logger.error(
@@ -196,7 +203,8 @@ class Agent(AbstractAgent):
 			})
 
 		if updateResponse:
-			_id = self.mongodb.insertData(self.mongodb.mongoConn.Life, {
+
+			_id = self.hiashdi.insertData("Life", {
 				"Use": entityType,
 				"Location": location,
 				"Zone": zone,
@@ -207,20 +215,26 @@ class Agent(AbstractAgent):
 				"Staff": entity if entityType == "Staff" else "NA",
 				"Data": data,
 				"Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-			}, None)
-
-			self.mqtt.publish("Integrity", {
-				"_id": str(_id),
-				"CPU": str(data["CPU"]),
-				"Memory": str(data["Memory"]),
-				"Diskspace": str(data["Diskspace"]),
-				"Temperature": str(data["Temperature"]),
-				"Latitude": str(data["Latitude"]),
-				"Longitude": str(data["Longitude"])
 			})
 
-			self.helpers.logger.info(
-				entityType + " " + entity + " life update OK")
+			if _id != False:
+
+				self.helpers.logger.info(
+					entityType + " " + entity + " life update OK")
+
+				self.mqtt.publish("Integrity", {
+					"_id": str(_id),
+					"CPU": str(data["CPU"]),
+					"Memory": str(data["Memory"]),
+					"Diskspace": str(data["Diskspace"]),
+					"Temperature": str(data["Temperature"]),
+					"Latitude": str(data["Latitude"]),
+					"Longitude": str(data["Longitude"])
+				})
+
+			else:
+				self.helpers.logger.error(
+				entityType + " " + entity + " life update KO")
 		else:
 			self.helpers.logger.error(
 				entityType + " " + entity + " life update KO")
@@ -282,7 +296,8 @@ class Agent(AbstractAgent):
 			})
 
 		if updateResponse:
-			_id = self.mongodb.insertData(self.mongodb.mongoConn.Sensors, {
+
+			_id = self.hiashdi.insertData("Sensors", {
 				"Use": entityType,
 				"Location": location,
 				"Zone": zone,
@@ -297,18 +312,24 @@ class Agent(AbstractAgent):
 				"Value": data["Value"],
 				"Message": data["Message"],
 				"Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-			}, None)
-
-			self.mqtt.publish("Integrity", {
-				"_id": str(_id),
-				"Sensor": data["Sensor"],
-				"Type": data["Type"],
-				"Value": data["Value"],
-				"Message": data["Message"]
 			})
 
-			self.helpers.logger.info(
-				entityType + " " + entity + " sensors update OK")
+			if _id != False:
+
+				self.helpers.logger.info(
+					entityType + " " + entity + " sensors update OK")
+
+				self.mqtt.publish("Integrity", {
+					"_id": str(_id),
+					"Sensor": data["Sensor"],
+					"Type": data["Type"],
+					"Value": data["Value"],
+					"Message": data["Message"]
+				})
+
+			else:
+				self.helpers.logger.error(
+				entityType + " " + entity + " life update KO")
 		else:
 			self.helpers.logger.error(
 				entityType + " " + entity + " sensors update KO")
@@ -374,8 +395,8 @@ def main():
 	signal.signal(signal.SIGINT, Agent.signal_handler)
 	signal.signal(signal.SIGTERM, Agent.signal_handler)
 
-	Agent.mongodbConn()
 	Agent.hiascdiConn()
+	Agent.hiashdiConn()
 	Agent.hiasbchConn()
 	Agent.mqttConn({
 		"host": Agent.credentials["iotJumpWay"]["host"],

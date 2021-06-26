@@ -102,3 +102,9 @@ class helpers():
 
 		with open(os.path.dirname(os.path.abspath(__file__)) + '/../../../../configuration/config.json') as confs:
 			self.confs_core = json.loads(confs.read())
+
+		with open(os.path.dirname(os.path.abspath(__file__)) + '/../../../hiashdi/configuration/config.json') as confs:
+			self.confs_hiashdi = json.loads(confs.read())
+
+		with open(os.path.dirname(os.path.abspath(__file__)) + '/../../../hiashdi/configuration/credentials.json') as confs:
+			self.credentials_hiashdi = json.loads(confs.read())
