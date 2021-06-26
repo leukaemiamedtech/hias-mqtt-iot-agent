@@ -20,6 +20,7 @@ The following is a guide on how to contribute to Asociación de Investigacion en
 - [Documentation](#documentation)
 - [Installation Scripts](#documentation)
 - [Naming](#documentation)
+- [Code Styling Guide](#code-styling-guide)
 - [Attribution](#documentation)
 - [.md Files](#documentation)
 - [Push changes to forked repository](#documentation)
@@ -127,6 +128,12 @@ You will notice the **Scripts** directory above, this is home to any scripts tha
 # Naming
 
 We use CamelCase for our directory and file names (except images), we would like this to stay uniform across all of our projects. Please use descriptive but short names where possible, and make sure you do not use spaces in directory and file names.
+
+&nbsp;
+
+# Code Styling Guide
+
+Code contributed to HIASBCH MQTT Blockchain Agent must follow the [PEP 8 -- Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/) in order to set a common programming style for all developers working on the code.
 
 &nbsp;
 
