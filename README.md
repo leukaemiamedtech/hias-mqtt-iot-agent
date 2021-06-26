@@ -37,7 +37,7 @@ The **HIAS MQTT IoT Agent** is a bridge between HIAS devices that support the MQ
 
 # GETTING STARTED
 
-To get started follow the [Getting Started](documentation/getting-started.md) guide.
+To get started follow the [Getting Started](docs/getting-started.md) guide.
 
 &nbsp;
 
