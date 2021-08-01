@@ -71,8 +71,8 @@ The IoT Agent sends southbound traffic to devices and applications using a proto
 
 To get started follow the following guides:
 
-- [Ubuntu intallation guide](installation/ubuntu.md)
-- [Ubuntu usage guide](usage/ubuntu.md)
+- [Ubuntu intallation guide](docs/installation/ubuntu.md)
+- [Ubuntu usage guide](docs/usage/ubuntu.md)
 
 &nbsp;
 
