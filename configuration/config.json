@@ -1,1 +1,11 @@
-{}
+{
+    "agent": {
+        "params": [],
+        "api": {
+            "content": "application/json"
+        },
+        "proxy": {
+            "up": ""
+        }
+    }
+}

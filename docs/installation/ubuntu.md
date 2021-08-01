@@ -1,18 +1,18 @@
 # Ubuntu Installation
 
-![HIAS MQTT IoT Agent](../img/hias-mqtt-iot-agent.jpg)
+![HIAS MQTT IoT Agent](../img/project-banner.jpg)
 
 # Introduction
-This guide will guide you through the installation process for the HIAS MQTT IoT Agent.
+This guide will take you through the installation process for the **HIAS MQTT IoT Agent**.
 
 &nbsp;
 
 # Prerequisites
 You will need to ensure you have the following prerequisites installed and setup.
 
-## HIAS Server
+## HIAS Core
 
-The HIAS MQTT IoT Agent is a core component of the [HIAS - Hospital Intelligent Automation Server](https://github.com/AIIAL/HIAS-Server). Before beginning this tutorial you should complete the HIAS installation guide and have your HIAS server online.
+The HIAS MQTT IoT Agent is a core component of the [HIAS - Hospital Intelligent Automation Server](https://github.com/AIIAL/HIAS-Core). Before beginning this tutorial you should complete the HIAS installation guide ensure your HIAS server is online.
 
 &nbsp;
 
@@ -21,16 +21,16 @@ You are now ready to install the HIAS MQTT IoT Agent software.
 
 ## Clone the repository
 
-Clone the [HIAS MQTT IoT Agent](https://github.com/AIIAL/HIAS-MQTT-IoT-Agent " HIAS MQTT IoT Agent") repository from the [Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss](https://github.com/AIIAL "Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss") Github Organization.
+Clone the [HIAS MQTT IoT Agent](https://github.com/AIIAL/HIAS-MQTT-IoT-Agent " HIAS MQTT IoT Agent") repository from the [Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss](https://github.com/AIIAL "Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss") Github Organization to your HIAS project root.
 
-To clone the repository and install the project, make sure you have Git installed. Now navigate to your HIAS installation project root and then use the following command.
+To clone the repository and install the project, make sure you have Git installed. Now navigate to your HIAS Core project root and then use the following command.
 
 ``` bash
  git clone https://github.com/AIIAL/HIAS-MQTT-IoT-Agent.git
  mv HIAS-MQTT-IoT-Agent components/agents/mqtt
 ```
 
-This will clone the HIAS MQTT IoT Agent repository and move the cloned repository to the agents directory in the HIAS project (components/agents/mqtt/).
+This will clone the HIAS MQTT IoT Agent repository and move the cloned repository to the agents directory in the HIAS Core project (components/agents/mqtt/).
 
 ``` bash
  cd components/agents/
@@ -50,10 +50,10 @@ Navigate to the **components/agents/mqtt/** directory in your HIAS project root,
 Developers from the Github community that would like to contribute to the development of this project should first create a fork, and clone that repository. For detailed information please view the [CONTRIBUTING](https://github.com/AIIAL/HIAS-MQTT-IoT-Agent/blob/main/CONTRIBUTING.md "CONTRIBUTING") guide. You should pull the latest code from the development branch.
 
 ``` bash
- git clone -b "2.1.0" https://github.com/AIIAL/HIAS-MQTT-IoT-Agent.git
+ git clone -b "4.0.0" https://github.com/AIIAL/HIAS-MQTT-IoT-Agent.git
 ```
 
-The **-b "2.1.0"** parameter ensures you get the code from the latest master branch. Before using the below command please check our latest master branch in the button at the top of the project README.
+The **-b "4.0.0"** parameter ensures you get the code from the latest master branch. Before using the below command please check our latest master branch in the button at the top of the project README.
 
 ## Installation script
 
@@ -65,17 +65,15 @@ All other software requirements are included in **scripts/install.sh**. You can 
 
 &nbsp;
 
-# HIAS
+# HIAS Setup
 
-This device is a HIAS IoT Agent and uses the HIAS MQTT Broker to communicate with the HIAS network. To setup an IoT Agent on the HIAS network, head to the HIAS UI.
+This device is a **HIAS IoT Agent** and uses the **HIAS iotJumpWay MQTT Broker** to communicate with the HIAS network. To set up an IoT Agent on the HIAS network, head to your **HIAS Server UI**.
 
-The HIAS network is powered by a context broker that stores contextual data and exposes the data securely to authenticated HIAS applications and devices.
-
-Each HIAS IoT Agent has a JSON representation stored in the HIASCDI Context Broker that holds their contextual information.
+The HIAS network is powered by a context broker that stores contextual data and exposes the data securely to authenticated HIAS applications and devices. Each HIAS IoT Agent has a JSON representation stored in the HIASCDI Context Broker that holds their contextual information.
 
 ## HIAS IoT Agent
 
-A HIAS IoT Agent is a bridge between HIAS devices and applications, and the HIASCDI Context Broker. The IoT Agents process incoming data using a specific machine to machine communication protocol and then converting into a format compatible with HIASCDI, before sending the data to HIASCDI to update the contextual information.
+A HIAS IoT Agent is a bridge between HIAS devices and applications, and the **HIASCDI Context Broker** & **HIAS Historical Broker**. The IoT Agents process incoming data using a specific machine to machine communication protocol and then converting into a format compatible with HIASCDI, before sending the data to HIASCDI to update the contextual information.
 
 ![HIAS IoT Agents](../img/hias-iotjumpway-agents.jpg)
 
@@ -91,7 +89,11 @@ On the HIAS IoT Agent page you will be able to update the contextual data for th
 
 You now need to download the credentials required to connect the Acute Lymphoblastic Leukemia oneAPI Classifier to the HIAS network.
 
-Click on the **Agent Credentials** section to download the credentials file. This should open your file browser, navigate to the **HIAS/components/agents/mqtt/configuration/** directory and save the file as **credentials.json**.
+Click on the **Agent Credentials** section to download the credentials file. This should open your file browser, navigate to the **HIAS-Core/components/agents/mqtt/configuration/** directory and save the file as **credentials.json**.
+
+The final configuration you have to do is to add your **HIAS IoT Agent API Key** to the **configuration/config.json** file. **HIAS API Keys** are stored as hashes and are therefore it is not possible to retrieve the key from the server. To allow your HIAS MQTT IoT Agent to connect through the HIAS proxy you need to edit the configuration file adding your secret key to **agent->proxy->up**.
+
+If you have forgotten your IoT Agent's key, you can reset on the IoT Agent edit page in the HIAS UI.
 
 &nbsp;
 
@@ -105,14 +107,14 @@ sh components/agents/mqtt/scripts/service.sh
 &nbsp;
 
 # Continue
-Now you can continue with the HIAS [getting started guide](../getting-started.md)
+Now you can continue with the HIAS [usage guide](../usage/ubuntu.md)
 
 &nbsp;
 
 # Contributing
 Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss encourages and welcomes code contributions, bug fixes and enhancements from the Github community.
 
-Please read the [CONTRIBUTING](https://github.com/AIIAL/HIAS-MQTT-IoT-Agent/blob/main/CONTRIBUTING.md "CONTRIBUTING") document for a full guide to forking our repositories and submitting your pull requests. You will also find information about our code of conduct on this page.
+Please read the [CONTRIBUTING](https://github.com/AIIAL/HIAS-MQTT-IoT-Agent/blob/main/CONTRIBUTING.md "CONTRIBUTING") document for a full guide to forking our repositories and submitting your pull requests. You will also find our code of conduct in the [Code of Conduct](https://github.com/AIIAL/HIAS-MQTT-IoT-Agent/blob/main/CODE-OF-CONDUCT.md) document.
 
 ## Contributors
 - [Adam Milton-Barker](https://www.leukemiaairesearch.com/association/volunteers/adam-milton-barker "Adam Milton-Barker") - [Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss](https://www.leukemiaresearchassociation.ai "Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss") President/Founder & Lead Developer, Sabadell, Spain
