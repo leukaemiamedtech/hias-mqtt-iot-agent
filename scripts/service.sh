@@ -2,9 +2,10 @@
 
 FMSG="- HIAS MQTT IoT Agent service installation terminated"
 
-read -p "? This script will install the HIAS MQTT IoT Agent service on your device. Are you ready (y/n)? " cmsg
+echo "This script will install the HIAS MQTT IoT Agent service on your device."
+read -p "Proceed (y/n)? " proceed
 
-if [ "$cmsg" = "Y" -o "$cmsg" = "y" ]; then
+if [ "$proceed" = "Y" -o "$proceed" = "y" ]; then
 	echo "- Installing HIAS MQTT IoT Agent service"
 	sudo touch /lib/systemd/system/HIAS-MQTT-IoT-Agent.service
 	echo "[Unit]" | sudo tee -a /lib/systemd/system/HIAS-MQTT-IoT-Agent.service
