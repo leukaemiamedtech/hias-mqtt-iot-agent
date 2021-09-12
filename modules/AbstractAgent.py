@@ -121,9 +121,6 @@ class AbstractAgent(ABC):
 
         """
 
-        print(entity)
-        print(entityType)
-
         attrs = self.hiascdi.getRequiredAttributes(entityType, entity)
 
         rattrs = {}
