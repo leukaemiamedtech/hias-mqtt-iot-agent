@@ -47,7 +47,7 @@ class helpers():
 
         # Loads system configs
         self.confs = {}
-        self.loadConfs()
+        self.load_confs()
 
         # Sets system logging
         self.logger = logging.getLogger(ltype)
@@ -82,7 +82,7 @@ class helpers():
         if log is True:
             self.logger.info("Helpers class initialization complete.")
 
-    def loadConfs(self):
+    def load_confs(self):
         """ Load the configuration. """
 
         with open(os.path.dirname(os.path.abspath(__file__)) + '/../configuration/credentials.json') as credentials:

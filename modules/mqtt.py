@@ -51,7 +51,7 @@ class mqtt():
 
         self.configs = configs
         self.client_type = client_type
-        self.isConnected = False
+        self.is_connected = False
 
         self.helpers = helpers
         self.program = "HIAS iotJumpWay MQTT Module"
@@ -93,15 +93,15 @@ class mqtt():
             self.configs['location'], self.configs['zone'], self.configs['entity'])
 
         # Sets MQTT callbacks
-        self.actuatorCallback = None
-        self.bciCallback = None
-        self.commandsCallback = None
+        self.actuator_callback = None
+        self.bci_callback = None
+        self.comands_callback = None
         self.integrityCallback = None
-        self.lifeCallback = None
-        self.aiModelCallback = None
-        self.sensorsCallback = None
+        self.life_callback = None
+        self.ai_model_callback = None
+        self.sensors_callback = None
         self.stateCallback = None
-        self.statusCallback = None
+        self.status_callback = None
         self.zoneCallback = None
 
         self.helpers.logger.info(
@@ -113,16 +113,16 @@ class mqtt():
         Starts the HIAS iotJumpWay MQTT connection.
         """
 
-        self.mClient = pmqtt.Client(client_id=self.client_id, clean_session=True)
-        self.mClient.will_set(self.module_topics["statusTopic"], "OFFLINE", 0, False)
-        self.mClient.tls_set(self.mqtt_config["tls"], certfile=None, keyfile=None)
-        self.mClient.on_connect = self.on_connect
-        self.mClient.on_message = self.on_message
-        self.mClient.on_publish = self.on_publish
-        self.mClient.on_subscribe = self.on_subscribe
-        self.mClient.username_pw_set(str(self.configs['un']), str(self.configs['up']))
-        self.mClient.connect(self.mqtt_config["host"], self.mqtt_config["port"], 10)
-        self.mClient.loop_start()
+        self.m_client = pmqtt.Client(client_id=self.client_id, clean_session=True)
+        self.m_client.will_set(self.module_topics["statusTopic"], "OFFLINE", 0, False)
+        self.m_client.tls_set(self.mqtt_config["tls"], certfile=None, keyfile=None)
+        self.m_client.on_connect = self.on_connect
+        self.m_client.on_message = self.on_message
+        self.m_client.on_publish = self.on_publish
+        self.m_client.on_subscribe = self.on_subscribe
+        self.m_client.username_pw_set(str(self.configs['un']), str(self.configs['up']))
+        self.m_client.connect(self.mqtt_config["host"], self.mqtt_config["port"], 10)
+        self.m_client.loop_start()
 
         self.helpers.logger.info(
                     "iotJumpWay " + self.client_type + " connection started.")
@@ -133,22 +133,22 @@ class mqtt():
         On connection callback.
         """
 
-        if self.isConnected != True:
-            self.isConnected = True
+        if self.is_connected != True:
+            self.is_connected = True
 
             self.helpers.logger.info("iotJumpWay " + self.client_type + " connection successful.")
             self.helpers.logger.info("rc: " + str(rc))
 
-            self.statusPublish("ONLINE")
+            self.status_publish("ONLINE")
             self.subscribe()
 
-    def statusPublish(self, data):
+    def status_publish(self, data):
         """ Status publish
 
         Publishes a status.
         """
 
-        self.mClient.publish(self.module_topics["statusTopic"], data)
+        self.m_client.publish(self.module_topics["statusTopic"], data)
         self.helpers.logger.info("Published to " + self.client_type + " status.")
 
     def on_subscribe(self, client, obj, mid, granted_qos):
@@ -165,105 +165,105 @@ class mqtt():
         On message callback.
         """
 
-        splitTopic = msg.topic.split("/")
-        connType = splitTopic[1]
+        split_topic = msg.topic.split("/")
+        conn_type = split_topic[1]
 
-        if connType == "Agents":
-            topic = splitTopic[4]
-        elif connType == "AI":
-            topic = splitTopic[4]
-        elif connType == "Applications":
-            topic = splitTopic[3]
-        elif connType == "Devices":
-            topic = splitTopic[4]
-        elif connType == "HIASBCH":
-            topic = splitTopic[4]
-        elif connType == "HIASCDI":
-            topic = splitTopic[4]
-        elif connType == "HIASHDI":
-            topic = splitTopic[4]
-        elif connType == "Robotics":
-            topic = splitTopic[3]
-        elif connType == "Staff":
-            topic = splitTopic[3]
+        if conn_type == "Agents":
+            topic = split_topic[4]
+        elif conn_type == "AI":
+            topic = split_topic[4]
+        elif conn_type == "Applications":
+            topic = split_topic[3]
+        elif conn_type == "Devices":
+            topic = split_topic[4]
+        elif conn_type == "HIASBCH":
+            topic = split_topic[4]
+        elif conn_type == "HIASCDI":
+            topic = split_topic[4]
+        elif conn_type == "HIASHDI":
+            topic = split_topic[4]
+        elif conn_type == "Robotics":
+            topic = split_topic[3]
+        elif conn_type == "Staff":
+            topic = split_topic[3]
 
         self.helpers.logger.info(msg.payload)
-        self.helpers.logger.info("iotJumpWay " + connType + " " + msg.topic  + " communication received.")
+        self.helpers.logger.info("iotJumpWay " + conn_type + " " + msg.topic  + " communication received.")
 
         if topic == 'Actuators':
-            if self.actuatorCallback == None:
+            if self.actuator_callback == None:
                 self.helpers.logger.info(
-                        connType + " actuator callback required (actuatorCallback) !")
+                        conn_type + " actuator callback required (actuator_callback) !")
             else:
-                self.actuatorCallback(msg.topic, msg.payload)
+                self.actuator_callback(msg.topic, msg.payload)
         elif topic == 'AI':
-            if self.aiModelCallback == None:
+            if self.ai_model_callback == None:
                 self.helpers.logger.info(
-                        connType + " AI callback required (aiModelCallback) !")
+                        conn_type + " AI callback required (ai_model_callback) !")
             else:
-                self.aiModelCallback(msg.topic, msg.payload)
+                self.ai_model_callback(msg.topic, msg.payload)
         elif topic == 'BCI':
-            if self.bciCallback == None:
+            if self.bci_callback == None:
                 self.helpers.logger.info(
-                        connType + " BCI callback required (bciCallback) !")
+                        conn_type + " BCI callback required (bci_callback) !")
             else:
-                self.bciCallback(msg.topic, msg.payload)
+                self.bci_callback(msg.topic, msg.payload)
         elif topic == 'Commands':
-            if self.commandsCallback == None:
+            if self.comands_callback == None:
                 self.helpers.logger.info(
-                        connType + " comands callback required (commandsCallback) !")
+                        conn_type + " comands callback required (comands_callback) !")
             else:
-                self.commandsCallback(msg.topic, msg.payload)
+                self.comands_callback(msg.topic, msg.payload)
         elif topic == 'Integrity':
             if self.integrityCallback == None:
                 self.helpers.logger.info(
-                        connType + " Integrity callback required (integrityCallback) !")
+                        conn_type + " Integrity callback required (integrityCallback) !")
             else:
                 self.integrityCallback(msg.topic, msg.payload)
         elif topic == 'Life':
-            if self.lifeCallback == None:
+            if self.life_callback == None:
                 self.helpers.logger.info(
-                        connType + " life callback required (lifeCallback) !")
+                        conn_type + " life callback required (life_callback) !")
             else:
-                self.lifeCallback(msg.topic, msg.payload)
+                self.life_callback(msg.topic, msg.payload)
         elif topic == 'Sensors':
-            if self.sensorsCallback == None:
+            if self.sensors_callback == None:
                 self.helpers.logger.info(
-                        connType + " status callback required (sensorsCallback) !")
+                        conn_type + " status callback required (sensors_callback) !")
             else:
-                self.sensorsCallback(msg.topic, msg.payload)
+                self.sensors_callback(msg.topic, msg.payload)
         elif topic == 'State':
             if self.stateCallback == None:
                 self.helpers.logger.info(
-                        connType + " life callback required (stateCallback) !")
+                        conn_type + " life callback required (stateCallback) !")
             else:
                 self.stateCallback(msg.topic, msg.payload)
         elif topic == 'Status':
-            if self.statusCallback == None:
+            if self.status_callback == None:
                 self.helpers.logger.info(
-                        connType + " status callback required (statusCallback) !")
+                        conn_type + " status callback required (status_callback) !")
             else:
-                self.statusCallback(msg.topic, msg.payload)
+                self.status_callback(msg.topic, msg.payload)
         elif topic == 'Zone':
             if self.zoneCallback == None:
                 self.helpers.logger.info(
-                        connType + " status callback required (zoneCallback) !")
+                        conn_type + " status callback required (zoneCallback) !")
             else:
                 self.zoneCallback(msg.topic, msg.payload)
 
-    def publish(self, channel, data, channelPath = ""):
+    def publish(self, channel, data, channel_path = ""):
         """ Publish
 
         Publishes a iotJumpWay MQTT payload.
         """
 
         if channel == "Custom":
-            channel = channelPath
+            channel = channel_path
         else:
             channel = '%s/Agents/%s/%s/%s' % (self.configs['location'],
                 self.configs['zone'], self.configs['entity'], channel)
 
-        self.mClient.publish(channel, json.dumps(data))
+        self.m_client.publish(channel, json.dumps(data))
         self.helpers.logger.info("Published to " + channel)
         return True
 
@@ -274,7 +274,7 @@ class mqtt():
         """
 
         channel = '%s/#' % (self.configs['location'])
-        self.mClient.subscribe(channel, qos=qos)
+        self.m_client.subscribe(channel, qos=qos)
         self.helpers.logger.info("-- Agent subscribed to all channels")
         return True
 
@@ -300,6 +300,6 @@ class mqtt():
         Disconnects from the HIAS iotJumpWay MQTT Broker.
         """
 
-        self.statusPublish("OFFLINE")
-        self.mClient.disconnect()
-        self.mClient.loop_stop()
+        self.status_publish("OFFLINE")
+        self.m_client.disconnect()
+        self.m_client.loop_stop()

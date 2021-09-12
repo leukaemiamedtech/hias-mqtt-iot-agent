@@ -59,15 +59,15 @@ class hiashdi():
 
         self.helpers.logger.info("HIASHDI initialization complete.")
 
-    def insertData(self, typeof, data):
+    def insert_data(self, typeof, data):
         """ Inserts data into HIASHDI. """
 
-        apiHost = "https://" + self.helpers.credentials["server"]["host"] + "/" + \
+        api_host = "https://" + self.helpers.credentials["server"]["host"] + "/" + \
                     self.helpers.credentials["hiashdi"]["endpoint"]
-        apiEndpoint = "/data?type=" + typeof
-        apiURL = apiHost + apiEndpoint
+        api_endpoint = "/data?type=" + typeof
+        api_url = api_host + api_endpoint
 
-        response = requests.post(apiURL, data=json.dumps(
+        response = requests.post(api_url, data=json.dumps(
             data), headers=self.headers, auth=self.auth)
 
         if response.status_code == 201:
