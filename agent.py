@@ -704,6 +704,110 @@ class agent(AbstractAgent):
                 self.helpers.logger.error(
                     entityType + " " + entity + " AI model data update KO")
 
+    def stateCallback(self, topic, payload):
+        """Called in the event of an state payload
+
+        Args:
+            topic (str): The topic the payload was sent to.
+            payload (:obj:`str`): The payload.
+        """
+
+        data = json.loads(payload.decode("utf-8"))
+        splitTopic = topic.split("/")
+
+        if splitTopic[1] not in self.ignoreTypes:
+            entityType = splitTopic[1][:-1]
+        else:
+            entityType = splitTopic[1]
+
+        if entityType in ["Robotics", "Application", "Staff"]:
+            entity = splitTopic[2]
+        else:
+            entity = splitTopic[3]
+
+        self.helpers.logger.info(
+            "Received " + entityType + " State Data: " + str(data))
+
+        attrs = self.getRequiredAttributes(entityType, entity)
+        bch = attrs["blockchain"]
+
+        if not self.hiasbch.iotJumpWayAccessCheck(bch):
+            return
+
+        entity = attrs["id"]
+        location = attrs["location"]
+        zone = attrs["zone"] if "zone" in attrs else "NA"
+
+        updateResponse = self.hiascdi.updateEntity(
+            entity, entityType, {
+                "network.status": {"value": "ONLINE"},
+                "network.status.metadata": {"timestamp": datetime.now().isoformat()},
+                "dateModified": {
+                    "type": "DateTime",
+                    "value": datetime.now().isoformat()
+                }
+            })
+
+        actuators = self.hiascdi.getActuators(entity, entityType)
+        actuatorData = actuators["actuators"]["value"]
+        commandExists = False
+
+        i = 0
+        for actuator in actuatorData:
+            commandExists = True
+            if data["Name"] in actuator["name"]["value"] and data["Type"].lower() in actuator["commands"] \
+                and data["Value"].lower() in actuator["commands"][data["Type"]]:
+                actuatorData[i]["state"] = {
+                    "value": data["Value"],
+                    "timestamp": datetime.now().isoformat()
+                }
+            i = i + 1
+
+        if commandExists:
+            updateResponse = self.hiascdi.updateEntity(
+                entity, entityType, {
+                    "actuators": {"value": actuatorData},
+                    "dateModified": {
+                        "type": "DateTime",
+                        "value": datetime.now().isoformat()
+                    }
+                })
+
+            if updateResponse:
+                _id = self.hiashdi.insertData("Actuators", {
+                    "Use": entityType,
+                    "Location": location,
+                    "Zone": zone,
+                    "HIASBCH": entity if entityType == "HIASBCH" else "NA",
+                    "HIASCDI": entity if entityType == "HIASCDI" else "NA",
+                    "HIASHDI": entity if entityType == "HIASHDI" else "NA",
+                    "Agent": entity if entityType == "Agent" else "NA",
+                    "Application": entity if entityType == "Application" else "NA",
+                    "Device": entity if entityType == "Device" else "NA",
+                    "Staff": entity if entityType == "Staff" else "NA",
+                    "Robotics": entity if entityType == "Robotics" else "NA",
+                    "Actuator": data["Name"],
+                    "Type": data["Type"],
+                    "Value": data["Value"],
+                    "Message": data["Message"],
+                    "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                })
+
+                self.mqtt.publish("Integrity", {
+                    "_id": str(_id),
+                    "From": entity,
+                    "Actuator": data["Name"],
+                    "Type": data["Type"],
+                    "Value": data["Value"],
+                    "Message": data["Message"]
+                })
+
+                self.helpers.logger.info(
+                    entityType + " " + entity + " state data update OK")
+            else:
+                self.helpers.logger.error(
+                    entityType + " " + entity + " state data update KO")
+
     def respond(self, responseCode, response):
         """ Returns the request repsonse """
 
@@ -760,6 +864,7 @@ def main():
     agent.mqtt.commandsCallback = agent.commandsCallback
     agent.mqtt.lifeCallback = agent.lifeCallback
     agent.mqtt.sensorsCallback = agent.sensorsCallback
+    agent.mqtt.stateCallback = agent.stateCallback
     agent.mqtt.statusCallback = agent.statusCallback
 
     agent.threading()
