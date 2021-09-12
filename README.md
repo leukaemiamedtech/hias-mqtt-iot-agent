@@ -3,7 +3,7 @@
 
 ![HIAS MQTT IoT Agent](assets/images/project-banner.jpg)
 
-[![CURRENT RELEASE](https://img.shields.io/badge/CURRENT%20RELEASE-3.0.0-blue.svg)](https://github.com/AIIAL/HIAS-MQTT-IoT-Agent/tree/3.0.0) [![UPCOMING RELEASE](https://img.shields.io/badge/CURRENT%20DEV%20BRANCH-4.0.0-blue.svg)](https://github.com/AIIAL/HIAS-MQTT-IoT-Agent/tree/4.0.0) [![Contributions Welcome!](https://img.shields.io/badge/Contributions-Welcome-lightgrey.svg)](CONTRIBUTING.md)  [![Issues](https://img.shields.io/badge/Issues-Welcome-lightgrey.svg)](issues)
+[![CURRENT RELEASE](https://img.shields.io/badge/CURRENT%20RELEASE-3.1.0-blue.svg)](https://github.com/aiial/hias-mqtt-iot-agent/tree/release-3.1.0) [![UPCOMING RELEASE](https://img.shields.io/badge/DEV%20BRANCH-develop-blue.svg)](https://github.com/aiial/hias-mqtt-iot-agent/tree/develop) [![Contributions Welcome!](https://img.shields.io/badge/Contributions-Welcome-lightgrey.svg)](CONTRIBUTING.md)  [![Issues](https://img.shields.io/badge/Issues-Welcome-lightgrey.svg)](issues)
 
  [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/) [![Documentation Status](https://readthedocs.org/projects/hias-mqtt-iot-agent/badge/?version=latest)](https://hias-mqtt-iot-agent.readthedocs.io/en/latest/?badge=latest)
  [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4994/badge)](https://bestpractices.coreinfrastructure.org/projects/4994)
@@ -29,7 +29,7 @@
 
 # Introduction
 
-A **HIAS IoT Agent** is a bridge between HIAS network devices and applications, and the HIASCDI Contextual Data Interface. The **HIAS MQTT IoT Agent** is a HIAS AI Agent that communicates with HIAS devices and applications using the MQTT machine to machine communication protocol.
+A **HIAS IoT Agent** is a bridge between HIAS network devices and applications, and the HIASCDI Contextual Data Interface. The **HIAS MQTT IoT Agent** communicates with HIAS devices and applications using the MQTT machine to machine communication protocol.
 
 &nbsp;
 
@@ -43,13 +43,13 @@ The protocol is publish-subscribe (Pub/Sub) communication protocol that runs ove
 
 # HIAS
 
-![HIAS - Hospital Intelligent Automation Server](assets/images/hias-network.jpg)
+![HIAS - Hospital Intelligent Automation Server](assets/images/hias-network-v3.jpg)
 
-[HIAS - Hospital Intelligent Automation Server](https://github.com/AIIAL/HIAS-Core) is an open-source automation server designed to control and manage an intelligent network of IoT connected devices and applications.
+[HIAS - Hospital Intelligent Automation Server](https://github.com/aiial/HIAS-Core) is an open-source server for hospitals and medical centers, designed to control and manage a network of intelligent IoT connected devices and applications.
 
 ## HIAS IoT Agents
 
-The HIAS iotJumpWay Agents are a selection of protocol/transfer specific applications that act as a bridge between the **HIASCDI Contextual Data Interface** & the **HIASHDI Historical Data Interface** and the devices and applications connected to the HIAS network via the iotJumpWay. Supported protocols currently include **HTTP**, **MQTT**, **Websockets**, **AMQP** and **Bluetooth/Bluetooth Low Energy (BLE)**.
+The HIAS iotJumpWay IoT Agents are based on FIWARE IoT Agents and are a selection of protocol/transfer specific applications that act as a bridge between the **HIASCDI Contextual Data Interface** & the **HIASHDI Historical Data Interface** and the devices and applications connected to the HIAS network via the iotJumpWay. Supported protocols currently include **HTTP**, **MQTT**, **Websockets**, **AMQP** and **Bluetooth/Bluetooth Low Energy (BLE)**.
 
 Each IoT Agent provides a North & South Port interface that allows communication to and from the Context Broker.
 
