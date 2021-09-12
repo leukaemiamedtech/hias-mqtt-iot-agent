@@ -7,13 +7,13 @@ read -p "Proceed (y/n)? " proceed
 
 if [ "$proceed" = "Y" -o "$proceed" = "y" ]; then
     echo "- Installing HIAS MQTT IoT Agent"
-    pip3 install --user bcrypt
-    pip3 install --user flask
-    pip3 install --user paho-mqtt
-    pip3 install --user psutil
-    pip3 install --user requests
-    pip3 install --user web3
-    echo "- HIAS MQTT IoT Agent installed!"
+    conda install -c anaconda bcrypt
+    conda install flask
+    conda install -c conda-forge paho-mqtt
+    conda install psutil
+    conda install requests
+    conda install -c conda-forge web3
+    printf -- '\033[32m SUCCESS: HIAS MQTT IoT Agent installed! \033[0m\n';
 else
     echo $FMSG;
     exit
