@@ -98,7 +98,7 @@ class mqtt():
         self.commandsCallback = None
         self.integrityCallback = None
         self.lifeCallback = None
-        self.modelCallback = None
+        self.aiModelCallback = None
         self.sensorsCallback = None
         self.stateCallback = None
         self.statusCallback = None
@@ -170,11 +170,9 @@ class mqtt():
 
         if connType == "Agents":
             topic = splitTopic[4]
-        elif connType == "Robotics":
-            topic = splitTopic[3]
+        elif connType == "AI":
+            topic = splitTopic[4]
         elif connType == "Applications":
-            topic = splitTopic[3]
-        elif connType == "Staff":
             topic = splitTopic[3]
         elif connType == "Devices":
             topic = splitTopic[4]
@@ -184,6 +182,10 @@ class mqtt():
             topic = splitTopic[4]
         elif connType == "HIASHDI":
             topic = splitTopic[4]
+        elif connType == "Robotics":
+            topic = splitTopic[3]
+        elif connType == "Staff":
+            topic = splitTopic[3]
 
         self.helpers.logger.info(msg.payload)
         self.helpers.logger.info("iotJumpWay " + connType + " " + msg.topic  + " communication received.")
@@ -194,6 +196,12 @@ class mqtt():
                         connType + " actuator callback required (actuatorCallback) !")
             else:
                 self.actuatorCallback(msg.topic, msg.payload)
+        elif topic == 'AI':
+            if self.aiModelCallback == None:
+                self.helpers.logger.info(
+                        connType + " AI callback required (aiModelCallback) !")
+            else:
+                self.aiModelCallback(msg.topic, msg.payload)
         elif topic == 'BCI':
             if self.bciCallback == None:
                 self.helpers.logger.info(

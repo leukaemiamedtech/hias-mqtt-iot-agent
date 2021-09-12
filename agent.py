@@ -621,6 +621,89 @@ class agent(AbstractAgent):
             self.helpers.logger.error(
                 entityType + " " + entity + " BCI data update KO")
 
+    def aiModelCallback(self, topic, payload):
+        """Called in the event of an AI payload
+
+        Args:
+            topic (str): The topic the payload was sent to.
+            payload (:obj:`str`): The payload.
+        """
+
+        data = json.loads(payload.decode("utf-8"))
+        splitTopic = topic.split("/")
+
+        if splitTopic[1] not in self.ignoreTypes:
+            entityType = splitTopic[1][:-1]
+        else:
+            entityType = splitTopic[1]
+
+        if entityType in ["Robotics", "Application", "Staff"]:
+            entity = splitTopic[2]
+        else:
+            entity = splitTopic[3]
+
+        self.helpers.logger.info(
+            "Received " + entityType + " AI Data: " + str(data))
+
+        attrs = self.getRequiredAttributes(entityType, entity)
+        bch = attrs["blockchain"]
+
+        if not self.hiasbch.iotJumpWayAccessCheck(bch):
+            return
+
+        entity = attrs["id"]
+        location = attrs["location"]
+        zone = attrs["zone"] if "zone" in attrs else "NA"
+
+        updateResponse = self.hiascdi.updateEntity(
+            entity, entityType, {
+                "network.status": {"value": "ONLINE"},
+                "network.status.metadata": {"timestamp": datetime.now().isoformat()},
+                "dateModified": {"value": datetime.now().isoformat()}
+            })
+
+        models = self.hiascdi.getAiModels(entity, entityType)
+        modelData = models["models"]["value"]
+        modelExists = False
+
+        for model in modelData:
+            modelExists = True
+            if model == data["Model"] and data["State"] in modelData[data["Model"]]["states"]["value"]:
+                modelData[data["Model"]]["state"] = {
+                    "value": data["State"],
+                    "timestamp": datetime.now().isoformat()
+                }
+            if model == data["Model"] and data["Type"] in modelData[data["Model"]]["properties"]["value"]:
+                modelData[data["Model"]]["properties"]["value"][data["Type"]] = {
+                    "value": data["Value"],
+                    "timestamp": datetime.now().isoformat()
+                }
+
+        if modelExists:
+            updateResponse = self.hiascdi.updateEntity(
+                entity, entityType, {
+                    "models": {"value": modelData},
+                    "dateModified": {"value": datetime.now().isoformat()}
+                })
+
+            if updateResponse:
+                _id = self.hiashdi.insertData("AI", {
+                    "Use": entityType,
+                    "Location": location,
+                    "Zone": zone,
+                    "Agent": entity,
+                    "Type": data["Type"],
+                    "Value": data["Value"],
+                    "Message": data["Message"],
+                    "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                })
+
+                self.helpers.logger.info(
+                    entityType + " " + entity + " AI model data update OK")
+            else:
+                self.helpers.logger.error(
+                    entityType + " " + entity + " AI model data update KO")
+
     def respond(self, responseCode, response):
         """ Returns the request repsonse """
 
@@ -671,12 +754,13 @@ def main():
         "up": agent.credentials["iotJumpWay"]["up"]
     })
 
-    agent.mqtt.statusCallback = agent.statusCallback
+    agent.mqtt.actuatorCallback = agent.actuatorCallback
+    agent.mqtt.aiModelCallback = agent.aiModelCallback
+    agent.mqtt.bciCallback = agent.bciCallback
+    agent.mqtt.commandsCallback = agent.commandsCallback
     agent.mqtt.lifeCallback = agent.lifeCallback
     agent.mqtt.sensorsCallback = agent.sensorsCallback
-    agent.mqtt.actuatorCallback = agent.actuatorCallback
-    agent.mqtt.commandsCallback = agent.commandsCallback
-    agent.mqtt.bciCallback = agent.bciCallback
+    agent.mqtt.statusCallback = agent.statusCallback
 
     agent.threading()
 

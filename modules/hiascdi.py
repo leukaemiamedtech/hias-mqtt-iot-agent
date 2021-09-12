@@ -110,3 +110,14 @@ class hiascdi():
         response = requests.get(apiUrl, headers=self.headers, auth=self.auth)
 
         return json.loads(response.text)
+
+    def getAiModels(self, _id, typeof):
+        """ Gets AI Agent models. """
+
+        apiUrl = "https://" + self.helpers.credentials["server"]["host"] + "/" + \
+                    self.helpers.credentials["hiascdi"]["endpoint"] + \
+                    "/entities/" + _id + "?type=" + typeof + "&attrs=models"
+
+        response = requests.get(apiUrl, headers=self.headers, auth=self.auth)
+
+        return json.loads(response.text)
