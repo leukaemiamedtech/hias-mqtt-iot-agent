@@ -1,4 +1,4 @@
-# Ubuntu Usage
+#  Usage Guide (Ubuntu)
 
 ![HIAS MQTT IoT Agent](../img/project-banner.jpg)
 
@@ -9,7 +9,7 @@ This guide will take you through using the **HIAS MQTT IoT Agent**.
 
 # Prerequisites
 
-- You must have completed the [HIAS MQTT IoT Agent installation guide](../installation/installation.md).
+- You must have completed the [HIAS MQTT IoT Agent installation guide](../installation/ubuntu.md).
 
 - Ensure **HIAS**, **HIASBCH**, **HIASHDI** and **HIASCDI** are **running**.
 

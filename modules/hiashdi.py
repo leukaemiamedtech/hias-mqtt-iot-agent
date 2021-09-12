@@ -37,40 +37,40 @@ import requests
 
 
 class hiashdi():
-	""" HIASHDI Helper Module
+    """ HIASHDI Helper Module
 
-	This module provides helper functions that allow the HIAS IoT
-	Agents to communicate with the HIASHDI Historical Data Interface.
-	"""
+    This module provides helper functions that allow the HIAS IoT
+    Agents to communicate with the HIASHDI Historical Data Interface.
+    """
 
-	def __init__(self, helpers):
-		""" Initializes the class. """
+    def __init__(self, helpers):
+        """ Initializes the class. """
 
-		self.helpers = helpers
-		self.program = "HIASHDI Helper Module"
+        self.helpers = helpers
+        self.program = "HIASHDI Helper Module"
 
-		self.headers = {
-			"accept": self.helpers.confs["agent"]["api"]["content"],
-			"content-type": self.helpers.confs["agent"]["api"]["content"]
-		}
+        self.headers = {
+            "accept": self.helpers.confs["agent"]["api"]["content"],
+            "content-type": self.helpers.confs["agent"]["api"]["content"]
+        }
 
-		self.auth = (self.helpers.credentials["hiashdi"]["un"],
-					self.helpers.confs["agent"]["proxy"]["up"])
+        self.auth = (self.helpers.credentials["hiashdi"]["un"],
+                    self.helpers.confs["agent"]["proxy"]["up"])
 
-		self.helpers.logger.info("HIASHDI initialization complete.")
+        self.helpers.logger.info("HIASHDI initialization complete.")
 
-	def insertData(self, typeof, data):
-		""" Inserts data into HIASHDI. """
+    def insertData(self, typeof, data):
+        """ Inserts data into HIASHDI. """
 
-		apiHost = "https://" + self.helpers.credentials["server"]["host"] + "/" + \
-					self.helpers.credentials["hiashdi"]["endpoint"]
-		apiEndpoint = "/data?type=" + typeof
-		apiURL = apiHost + apiEndpoint
+        apiHost = "https://" + self.helpers.credentials["server"]["host"] + "/" + \
+                    self.helpers.credentials["hiashdi"]["endpoint"]
+        apiEndpoint = "/data?type=" + typeof
+        apiURL = apiHost + apiEndpoint
 
-		response = requests.post(apiURL, data=json.dumps(
-			data), headers=self.headers, auth=self.auth)
+        response = requests.post(apiURL, data=json.dumps(
+            data), headers=self.headers, auth=self.auth)
 
-		if response.status_code == 201:
-			return response.headers["Id"]
-		else:
-			return False
+        if response.status_code == 201:
+            return response.headers["Id"]
+        else:
+            return False
