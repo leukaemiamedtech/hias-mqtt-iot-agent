@@ -62,8 +62,8 @@ class AbstractAgent(ABC):
         self.hiashdi = None
         self.mqtt = None
 
-        self.appTypes = ["Robotics", "Application", "Staff"]
-        self.ignoreTypes = ["Robotics", "HIASCDI", "HIASHDI", "HIASBCH", "Staff"]
+        self.app_types = ["Robotics", "Application", "Staff"]
+        self.ignore_types = ["Robotics", "HIASCDI", "HIASHDI", "HIASBCH", "Staff"]
 
         self.helpers = helpers("Agent")
         self.confs = self.helpers.confs
@@ -71,7 +71,7 @@ class AbstractAgent(ABC):
 
         self.helpers.logger.info("Agent initialization complete.")
 
-    def hiascdiConn(self):
+    def hiascdi_connection(self):
         """Instantiates the HIASCDI Contextual Data Interface connection. """
 
         self.hiascdi = hiascdi(self.helpers)
@@ -79,7 +79,7 @@ class AbstractAgent(ABC):
         self.helpers.logger.info(
             "HIASCDI Contextual Data Interface connection instantiated.")
 
-    def hiashdiConn(self):
+    def hiashdi_connection(self):
         """Instantiates the HIASCDI Historical Data Interface connection. """
 
         self.hiashdi = hiashdi(self.helpers)
@@ -87,7 +87,7 @@ class AbstractAgent(ABC):
         self.helpers.logger.info(
             "HIASHDI Historical Data Interface connection instantiated.")
 
-    def mqttConn(self, credentials):
+    def mqtt_connection(self, credentials):
         """Initializes the HIAS MQTT connection. """
 
         self.mqtt = mqtt(self.helpers, "Agent", credentials)
@@ -97,7 +97,7 @@ class AbstractAgent(ABC):
         self.helpers.logger.info(
             "HIAS iotJumpWay MQTT Broker connection created.")
 
-    def hiasbchConn(self):
+    def hiasbch_connection(self):
         """Initializes the HIASBCH connection. """
 
         self.hiasbch = hiasbch(self.helpers)
@@ -109,11 +109,11 @@ class AbstractAgent(ABC):
         self.helpers.logger.info(
             "HIAS HIASBCH Blockchain connection created.")
 
-    def getRequiredAttributes(self, entityType, entity):
+    def get_attributes(self, entity_type, entity):
         """Gets entity attributes from HIASCDI.
 
         Args:
-            entityType (str): The HIASCDI Entity type.
+            entity_type (str): The HIASCDI Entity type.
             entity (str): The entity id.
 
         Returns:
@@ -121,11 +121,11 @@ class AbstractAgent(ABC):
 
         """
 
-        attrs = self.hiascdi.getRequiredAttributes(entityType, entity)
+        attrs = self.hiascdi.get_attributes(entity_type, entity)
 
         rattrs = {}
 
-        if entityType in self.appTypes:
+        if entity_type in self.app_types:
             rattrs["id"] = attrs["id"]
             rattrs["type"] = attrs["type"]
             rattrs["blockchain"] = attrs["authenticationBlockchainUser"]["value"]

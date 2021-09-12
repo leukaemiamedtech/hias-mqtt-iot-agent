@@ -67,7 +67,7 @@ class hiasbch():
                                                 abi=json.dumps(self.credentials["hiasbch"]["contracts"]["iotJumpWay"]["abi"]))
         self.helpers.logger.info("HIASBCH connections started")
 
-    def iotJumpWayAccessCheck(self, address):
+    def iotjumpway_access_check(self, address):
         """ Checks sender is allowed access to the iotJumpWay Smart Contract """
 
         self.helpers.logger.info("HIASBCH checking " + address)
@@ -77,36 +77,4 @@ class hiasbch():
             return False
         else:
             return True
-
-    def hash(self, data):
-        """ Hashes Command data for data integrity. """
-
-        hashString = ""
-
-        for value in data:
-            if value != "_id":
-                hashString += str(data[value])
-
-        hashed = bcrypt.hashpw(hashString.encode(), bcrypt.gensalt())
-
-        return hashed
-
-    def storeHash(self, id, hashed, at, inserter, identifier, to, typeof):
-        """ Stores data hash in the iotJumpWay smart contract """
-
-        try:
-            txh = self.iotContract.functions.registerHash(id, hashed, at, 0, identifier, self.w3.toChecksumAddress(to)).transact({
-                                                        "from": self.w3.toChecksumAddress(self.credentials["hiasbch"]["un"]),
-                                                        "gas": 1000000})
-            self.helpers.logger.info("HIASBCH Data Transaction OK!")
-            txr = self.w3.eth.waitForTransactionReceipt(txh)
-            if txr["status"] is 1:
-                self.helpers.logger.info("HIASBCH Data Hash OK!")
-            else:
-                self.helpers.logger.error("HIASBCH Data Hash KO!")
-        except:
-            e = sys.exc_info()
-            self.helpers.logger.error("HIASBCH Data Hash KO!")
-            self.helpers.logger.error(str(e))
-            self.helpers.logger.error(str(e))
 

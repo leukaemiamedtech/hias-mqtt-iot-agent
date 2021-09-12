@@ -43,7 +43,6 @@ import signal
 import sys
 import time
 
-from abc import ABC, abstractmethod
 from datetime import datetime
 from flask import Flask, request, Response
 from threading import Thread
@@ -59,7 +58,7 @@ class agent(AbstractAgent):
     broker using the MQTT & Websocket machine to machine protocols.
     """
 
-    def statusCallback(self, topic, payload):
+    def status_callback(self, topic, payload):
         """Called in the event of a status payload
 
         Args:
@@ -68,58 +67,58 @@ class agent(AbstractAgent):
         """
 
         status = payload.decode()
-        splitTopic = topic.split("/")
+        split_topic = topic.split("/")
 
-        if splitTopic[1] not in self.ignoreTypes:
-            entityType = splitTopic[1][:-1]
+        if split_topic[1] not in self.ignore_types:
+            entity_type = split_topic[1][:-1]
         else:
-            entityType = splitTopic[1]
+            entity_type = split_topic[1]
 
-        if entityType in ["Robotics", "Application", "Staff"]:
-            entity = splitTopic[2]
+        if entity_type in ["Robotics", "Application", "Staff"]:
+            entity = split_topic[2]
         else:
-            entity = splitTopic[3]
+            entity = split_topic[3]
 
         self.helpers.logger.info(
-            "Received " + entityType  + " Status")
+            "Received " + entity_type  + " Status")
 
-        attrs = self.getRequiredAttributes(entityType, entity)
+        attrs = self.get_attributes(entity_type, entity)
         bch = attrs["blockchain"]
 
-        if not self.hiasbch.iotJumpWayAccessCheck(bch):
+        if not self.hiasbch.iotjumpway_access_check(bch):
             return
 
         entity = attrs["id"]
         location = attrs["location"]
         zone = attrs["zone"] if "zone" in attrs else "NA"
 
-        updateResponse = self.hiascdi.updateEntity(
-            entity, entityType, {
+        update_response = self.hiascdi.update_entity(
+            entity, entity_type, {
                 "networkStatus": {"value": status},
                 "networkStatus.metadata": {"timestamp": {"value": datetime.now().isoformat()}},
                 "dateModified": {"value": datetime.now().isoformat()}
             })
 
-        if updateResponse:
-            _id = self.hiashdi.insertData("Statuses", {
-                "Use": entityType,
+        if update_response:
+            _id = self.hiashdi.insert_data("Statuses", {
+                "Use": entity_type,
                 "Location": location,
                 "Zone": zone,
-                "HIASBCH": entity if entityType == "HIASBCH" else "NA",
-                "HIASCDI": entity if entityType == "HIASCDI" else "NA",
-                "HIASHDI": entity if entityType == "HIASHDI" else "NA",
-                "Agent": entity if entityType == "Agent" else "NA",
-                "Application": entity if entityType == "Application" else "NA",
-                "Device": entity if entityType == "Device" else "NA",
-                "Staff": entity if entityType == "Staff" else "NA",
-                "Robotics": entity if entityType == "Robotics" else "NA",
+                "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+                "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+                "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+                "Agent": entity if entity_type == "Agent" else "NA",
+                "Application": entity if entity_type == "Application" else "NA",
+                "Device": entity if entity_type == "Device" else "NA",
+                "Staff": entity if entity_type == "Staff" else "NA",
+                "Robotics": entity if entity_type == "Robotics" else "NA",
                 "Status": status,
                 "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             })
 
             if _id != False:
                 self.helpers.logger.info(
-                    entityType + " " + entity + " status update OK")
+                    entity_type + " " + entity + " status update OK")
 
                 self.mqtt.publish("Integrity", {
                     "_id": str(_id),
@@ -128,13 +127,13 @@ class agent(AbstractAgent):
 
             else:
                 self.helpers.logger.error(
-                entityType + " " + entity + " status update KO")
+                entity_type + " " + entity + " status update KO")
 
         else:
             self.helpers.logger.error(
-                entityType + " " + entity + " status update KO")
+                entity_type + " " + entity + " status update KO")
 
-    def lifeCallback(self, topic, payload):
+    def life_callback(self, topic, payload):
         """Called in the event of a life payload
 
         Args:
@@ -143,33 +142,33 @@ class agent(AbstractAgent):
         """
 
         data = json.loads(payload.decode("utf-8"))
-        splitTopic = topic.split("/")
+        split_topic = topic.split("/")
 
-        if splitTopic[1] not in self.ignoreTypes:
-            entityType = splitTopic[1][:-1]
+        if split_topic[1] not in self.ignore_types:
+            entity_type = split_topic[1][:-1]
         else:
-            entityType = splitTopic[1]
+            entity_type = split_topic[1]
 
-        if entityType in ["Robotics", "Application", "Staff"]:
-            entity = splitTopic[2]
+        if entity_type in ["Robotics", "Application", "Staff"]:
+            entity = split_topic[2]
         else:
-            entity = splitTopic[3]
+            entity = split_topic[3]
 
         self.helpers.logger.info(
-            "Received " + entityType  + " Life")
+            "Received " + entity_type  + " Life")
 
-        attrs = self.getRequiredAttributes(entityType, entity)
+        attrs = self.get_attributes(entity_type, entity)
         bch = attrs["blockchain"]
 
-        if not self.hiasbch.iotJumpWayAccessCheck(bch):
+        if not self.hiasbch.iotjumpway_access_check(bch):
             return
 
         entity = attrs["id"]
         location = attrs["location"]
         zone = attrs["zone"] if "zone" in attrs else "NA"
 
-        updateResponse = self.hiascdi.updateEntity(
-            entity, entityType, {
+        update_response = self.hiascdi.update_entity(
+            entity, entity_type, {
                 "networkStatus": {"value": "ONLINE"},
                 "networkStatus.metadata": {"timestamp": {"value": datetime.now().isoformat()}},
                 "dateModified": {"value": datetime.now().isoformat()},
@@ -194,26 +193,26 @@ class agent(AbstractAgent):
                 }
             })
 
-        if updateResponse:
-            _id = self.hiashdi.insertData("Life", {
-                "Use": entityType,
+        if update_response:
+            _id = self.hiashdi.insert_data("Life", {
+                "Use": entity_type,
                 "Location": location,
                 "Zone": zone,
-                "HIASBCH": entity if entityType == "HIASBCH" else "NA",
-                "HIASCDI": entity if entityType == "HIASCDI" else "NA",
-                "HIASHDI": entity if entityType == "HIASHDI" else "NA",
-                "Agent": entity if entityType == "Agent" else "NA",
-                "Application": entity if entityType == "Application" else "NA",
-                "Device": entity if entityType == "Device" else "NA",
-                "Staff": entity if entityType == "Staff" else "NA",
-                "Robotics": entity if entityType == "Robotics" else "NA",
+                "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+                "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+                "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+                "Agent": entity if entity_type == "Agent" else "NA",
+                "Application": entity if entity_type == "Application" else "NA",
+                "Device": entity if entity_type == "Device" else "NA",
+                "Staff": entity if entity_type == "Staff" else "NA",
+                "Robotics": entity if entity_type == "Robotics" else "NA",
                 "Data": data,
                 "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             })
 
             if _id != False:
                 self.helpers.logger.info(
-                    entityType + " " + entity + " life update OK")
+                    entity_type + " " + entity + " life update OK")
 
                 self.mqtt.publish("Integrity", {
                     "_id": str(_id),
@@ -227,12 +226,12 @@ class agent(AbstractAgent):
 
             else:
                 self.helpers.logger.error(
-                entityType + " " + entity + " life update KO")
+                entity_type + " " + entity + " life update KO")
         else:
             self.helpers.logger.error(
-                entityType + " " + entity + " life update KO")
+                entity_type + " " + entity + " life update KO")
 
-    def sensorsCallback(self, topic, payload):
+    def sensors_callback(self, topic, payload):
         """Called in the event of a sensor payload
 
         Args:
@@ -241,40 +240,40 @@ class agent(AbstractAgent):
         """
 
         data = json.loads(payload.decode("utf-8"))
-        splitTopic = topic.split("/")
+        split_topic = topic.split("/")
 
-        if splitTopic[1] not in self.ignoreTypes:
-            entityType = splitTopic[1][:-1]
+        if split_topic[1] not in self.ignore_types:
+            entity_type = split_topic[1][:-1]
         else:
-            entityType = splitTopic[1]
+            entity_type = split_topic[1]
 
-        if entityType in ["Robotics", "Application", "Staff"]:
-            entity = splitTopic[2]
+        if entity_type in ["Robotics", "Application", "Staff"]:
+            entity = split_topic[2]
         else:
-            entity = splitTopic[3]
+            entity = split_topic[3]
 
         self.helpers.logger.info(
-            "Received " + entityType  + " Sensors Data")
+            "Received " + entity_type  + " Sensors Data")
 
-        attrs = self.getRequiredAttributes(entityType, entity)
+        attrs = self.get_attributes(entity_type, entity)
         bch = attrs["blockchain"]
 
-        if not self.hiasbch.iotJumpWayAccessCheck(bch):
+        if not self.hiasbch.iotjumpway_access_check(bch):
             return
 
         entity = attrs["id"]
         location = attrs["location"]
         zone = attrs["zone"] if "zone" in attrs else "NA"
 
-        sensors = self.hiascdi.getSensors(
-            entity, entityType)
-        sensorData = sensors["sensors"]
+        sensors = self.hiascdi.get_sensors(
+            entity, entity_type)
+        sensor_data = sensors["sensors"]
 
         i = 0
-        for sensor in sensorData["value"]:
+        for sensor in sensor_data["value"]:
             for prop in sensor["properties"]["value"]:
                 if data["Type"].lower() in prop:
-                    sensorData["value"][i]["properties"]["value"][data["Type"].lower()] = {
+                    sensor_data["value"][i]["properties"]["value"][data["Type"].lower()] = {
                         "value": data["Value"],
                         "timestamp":  {
                             "value": datetime.now().isoformat()
@@ -282,29 +281,29 @@ class agent(AbstractAgent):
                     }
             i = i + 1
 
-        updateResponse = self.hiascdi.updateEntity(
-            entity, entityType, {
+        update_response = self.hiascdi.update_entity(
+            entity, entity_type, {
                 "networkStatus": {"value": "ONLINE"},
                 "networkStatus.metadata": {"timestamp":  {
                     "value": datetime.now().isoformat()
                 }},
                 "dateModified": {"value": datetime.now().isoformat()},
-                "sensors": sensorData
+                "sensors": sensor_data
             })
 
-        if updateResponse:
-            _id = self.hiashdi.insertData("Sensors", {
-                "Use": entityType,
+        if update_response:
+            _id = self.hiashdi.insert_data("Sensors", {
+                "Use": entity_type,
                 "Location": location,
                 "Zone": zone,
-                "HIASBCH": entity if entityType == "HIASBCH" else "NA",
-                "HIASCDI": entity if entityType == "HIASCDI" else "NA",
-                "HIASHDI": entity if entityType == "HIASHDI" else "NA",
-                "Agent": entity if entityType == "Agent" else "NA",
-                "Application": entity if entityType == "Application" else "NA",
-                "Device": entity if entityType == "Device" else "NA",
-                "Staff": entity if entityType == "Staff" else "NA",
-                "Robotics": entity if entityType == "Robotics" else "NA",
+                "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+                "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+                "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+                "Agent": entity if entity_type == "Agent" else "NA",
+                "Application": entity if entity_type == "Application" else "NA",
+                "Device": entity if entity_type == "Device" else "NA",
+                "Staff": entity if entity_type == "Staff" else "NA",
+                "Robotics": entity if entity_type == "Robotics" else "NA",
                 "Sensor": data["Sensor"],
                 "Type": data["Type"],
                 "Value": data["Value"],
@@ -314,7 +313,7 @@ class agent(AbstractAgent):
 
             if _id != False:
                 self.helpers.logger.info(
-                    entityType + " " + entity + " sensors update OK")
+                    entity_type + " " + entity + " sensors update OK")
 
                 self.mqtt.publish("Integrity", {
                     "_id": str(_id),
@@ -326,12 +325,12 @@ class agent(AbstractAgent):
 
             else:
                 self.helpers.logger.error(
-                entityType + " " + entity + " sensors update KO")
+                entity_type + " " + entity + " sensors update KO")
         else:
             self.helpers.logger.error(
-                entityType + " " + entity + " sensors update KO")
+                entity_type + " " + entity + " sensors update KO")
 
-    def actuatorCallback(self, topic, payload):
+    def actuator_callback(self, topic, payload):
         """Called in the event of a actuator payload
 
         Args:
@@ -340,41 +339,41 @@ class agent(AbstractAgent):
         """
 
         data = json.loads(payload.decode("utf-8"))
-        splitTopic = topic.split("/")
+        split_topic = topic.split("/")
 
-        if splitTopic[1] not in self.ignoreTypes:
-            entityType = splitTopic[1][:-1]
+        if split_topic[1] not in self.ignore_types:
+            entity_type = split_topic[1][:-1]
         else:
-            entityType = splitTopic[1]
+            entity_type = split_topic[1]
 
-        if entityType in ["Robotics", "Application", "Staff"]:
-            entity = splitTopic[2]
+        if entity_type in ["Robotics", "Application", "Staff"]:
+            entity = split_topic[2]
         else:
-            entity = splitTopic[3]
+            entity = split_topic[3]
 
         self.helpers.logger.info(
-            "Received " + entityType  + " Actuators Data")
+            "Received " + entity_type  + " Actuators Data")
 
-        attrs = self.getRequiredAttributes(entityType, entity)
+        attrs = self.get_attributes(entity_type, entity)
         bch = attrs["blockchain"]
 
-        if not self.hiasbch.iotJumpWayAccessCheck(bch):
+        if not self.hiasbch.iotjumpway_access_check(bch):
             return
 
         entity = attrs["id"]
         location = attrs["location"]
         zone = attrs["zone"] if "zone" in attrs else "NA"
 
-        actuators = self.hiascdi.getActuators(
-            entity, entityType)
-        actuatorData = actuators["actuators"]
+        actuators = self.hiascdi.get_actuators(
+            entity, entity_type)
+        actuator_data = actuators["actuators"]
 
         i = 0
-        for actuator in actuatorData["value"]:
-            commandExists = True
+        for actuator in actuator_data["value"]:
+            exists = True
             if data["Name"] in actuator["name"]["value"] and data["Type"].lower() in actuator["commands"]["value"] \
                 and data["Value"].lower() in actuator["commands"]["value"][data["Type"].lower()]:
-                actuatorData["value"][i]["state"] = {
+                actuator_data["value"][i]["state"] = {
                     "value": data["Value"],
                     "metadata":{
                         "timestamp": {
@@ -384,30 +383,30 @@ class agent(AbstractAgent):
                 }
             i = i + 1
 
-        if commandExists:
-            updateResponse = self.hiascdi.updateEntity(
-            entity, entityType, {
+        if exists:
+            update_response = self.hiascdi.update_entity(
+            entity, entity_type, {
                 "networkStatus": {"value": "ONLINE"},
                 "networkStatus.metadata": {"timestamp":  {
                     "value": datetime.now().isoformat()
                 }},
                 "dateModified": {"value": datetime.now().isoformat()},
-                "actuators": actuatorData
+                "actuators": actuator_data
             })
 
-            if updateResponse:
-                _id = self.hiashdi.insertData("Actuators", {
-                    "Use": entityType,
+            if update_response:
+                _id = self.hiashdi.insert_data("Actuators", {
+                    "Use": entity_type,
                     "Location": location,
                     "Zone": zone,
-                    "HIASBCH": entity if entityType == "HIASBCH" else "NA",
-                    "HIASCDI": entity if entityType == "HIASCDI" else "NA",
-                    "HIASHDI": entity if entityType == "HIASHDI" else "NA",
-                    "Agent": entity if entityType == "Agent" else "NA",
-                    "Application": entity if entityType == "Application" else "NA",
-                    "Device": entity if entityType == "Device" else "NA",
-                    "Staff": entity if entityType == "Staff" else "NA",
-                    "Robotics": entity if entityType == "Robotics" else "NA",
+                    "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+                    "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+                    "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+                    "Agent": entity if entity_type == "Agent" else "NA",
+                    "Application": entity if entity_type == "Application" else "NA",
+                    "Device": entity if entity_type == "Device" else "NA",
+                    "Staff": entity if entity_type == "Staff" else "NA",
+                    "Robotics": entity if entity_type == "Robotics" else "NA",
                     "Actuator": data["Name"],
                     "Type": data["Type"],
                     "Value": data["Value"],
@@ -417,7 +416,7 @@ class agent(AbstractAgent):
 
                 if _id != False:
                     self.helpers.logger.info(
-                        entityType + " " + entity + " actuators update OK")
+                        entity_type + " " + entity + " actuators update OK")
 
                     self.mqtt.publish("Integrity", {
                         "_id": str(_id),
@@ -429,12 +428,12 @@ class agent(AbstractAgent):
 
                 else:
                     self.helpers.logger.error(
-                    entityType + " " + entity + " actuators update KO")
+                    entity_type + " " + entity + " actuators update KO")
             else:
                 self.helpers.logger.error(
-                    entityType + " " + entity + " actuators update KO")
+                    entity_type + " " + entity + " actuators update KO")
 
-    def commandsCallback(self, topic, payload):
+    def comands_callback(self, topic, payload):
         """
         iotJumpWay Device Commands Callback
 
@@ -443,46 +442,46 @@ class agent(AbstractAgent):
         """
 
         data = json.loads(payload.decode("utf-8"))
-        splitTopic = topic.split("/")
+        split_topic = topic.split("/")
 
-        if splitTopic[1] not in self.ignoreTypes:
-            entityType = splitTopic[1][:-1]
+        if split_topic[1] not in self.ignore_types:
+            entity_type = split_topic[1][:-1]
         else:
-            entityType = splitTopic[1]
+            entity_type = split_topic[1]
 
-        if entityType in ["Robotics", "Application", "Staff"]:
-            entity = splitTopic[2]
+        if entity_type in ["Robotics", "Application", "Staff"]:
+            entity = split_topic[2]
         else:
-            entity = splitTopic[3]
+            entity = split_topic[3]
 
         self.helpers.logger.info(
             "Received Command Data")
 
-        attrs = self.getRequiredAttributes(entityType, entity)
+        attrs = self.get_attributes(entity_type, entity)
         bch = attrs["blockchain"]
 
-        if not self.hiasbch.iotJumpWayAccessCheck(bch):
+        if not self.hiasbch.iotjumpway_access_check(bch):
             return
 
         entity = attrs["id"]
         location = attrs["location"]
         zone = attrs["zone"] if "zone" in attrs else "NA"
-        commandExists = False
+        exists = False
 
         if "Command" in data and data["Command"] == "Verify":
 
             if data["Use"] == "Device":
 
-                actuators = self.hiascdi.getActuators(
+                actuators = self.hiascdi.get_actuators(
                      data["To"], data["Use"])
-                actuatorData = actuators["actuators"]
+                actuator_data = actuators["actuators"]
 
                 i = 0
-                for actuator in actuatorData["value"]:
-                    commandExists = True
+                for actuator in actuator_data["value"]:
+                    exists = True
                     if data["Name"] in actuator["name"]["value"] and data["Type"].lower() in actuator["commands"]["value"] \
                         and data["Value"].lower() in actuator["commands"]["value"][data["Type"].lower()]:
-                        actuatorData["value"][i]["state"] = {
+                        actuator_data["value"][i]["state"] = {
                             "value": "Processing " + data["Value"],
                             "metadata":{
                                 "timestamp": {
@@ -492,15 +491,15 @@ class agent(AbstractAgent):
                         }
                     i = i + 1
 
-                if commandExists:
-                    updateResponse = self.hiascdi.updateEntity(
+                if exists:
+                    update_response = self.hiascdi.update_entity(
                     data["To"], data["Use"], {
                         "networkStatus": {"value": "ONLINE"},
                         "networkStatus.metadata": {"timestamp":  {
                             "value": datetime.now().isoformat()
                         }},
                         "dateModified": {"value": datetime.now().isoformat()},
-                        "actuators": actuatorData
+                        "actuators": actuator_data
                     })
 
                     pathto = location + "/Devices/" +  data["Zone"] \
@@ -514,7 +513,7 @@ class agent(AbstractAgent):
                         "Message": data["Message"]
                     }, pathto)
 
-                    _id = self.hiashdi.insertData("Commands", {
+                    _id = self.hiashdi.insert_data("Commands", {
                         "Use": data["Use"],
                         "From": data["From"],
                         "Location": location,
@@ -546,7 +545,7 @@ class agent(AbstractAgent):
                     self.helpers.logger.info(
                         data["Use"] + " " + data["To"] + " command update OK")
 
-    def bciCallback(self, topic, payload):
+    def bci_callback(self, topic, payload):
         """Called in the event of a BCI payload
 
         Args:
@@ -555,51 +554,51 @@ class agent(AbstractAgent):
         """
 
         data = json.loads(payload.decode("utf-8"))
-        splitTopic = topic.split("/")
+        split_topic = topic.split("/")
 
-        if splitTopic[1] not in self.ignoreTypes:
-            entityType = splitTopic[1][:-1]
+        if split_topic[1] not in self.ignore_types:
+            entity_type = split_topic[1][:-1]
         else:
-            entityType = splitTopic[1]
+            entity_type = split_topic[1]
 
-        if entityType in ["Robotics", "Application", "Staff"]:
-            entity = splitTopic[2]
+        if entity_type in ["Robotics", "Application", "Staff"]:
+            entity = split_topic[2]
         else:
-            entity = splitTopic[3]
+            entity = split_topic[3]
 
         self.helpers.logger.info(
-            "Received " + entityType + " BCI Data: " + str(data))
+            "Received " + entity_type + " BCI Data: " + str(data))
 
-        attrs = self.getRequiredAttributes(entityType, entity)
+        attrs = self.get_attributes(entity_type, entity)
         bch = attrs["blockchain"]
 
-        if not self.hiasbch.iotJumpWayAccessCheck(bch):
+        if not self.hiasbch.iotjumpway_access_check(bch):
             return
 
         entity = attrs["id"]
         location = attrs["location"]
         zone = attrs["zone"] if "zone" in attrs else "NA"
 
-        updateResponse = self.hiascdi.updateEntity(
-            entity, entityType, {
+        update_response = self.hiascdi.update_entity(
+            entity, entity_type, {
                 "network.status": {"value": "ONLINE"},
                 "network.status.metadata": {"timestamp": datetime.now().isoformat()},
                 "dateModified": {"value": datetime.now().isoformat()}
             })
 
-        if updateResponse:
-            _id = self.hiashdi.insertData("Sensors", {
-                "Use": entityType,
+        if update_response:
+            _id = self.hiashdi.insert_data("Sensors", {
+                "Use": entity_type,
                 "Location": location,
                 "Zone": zone,
-                "HIASBCH": entity if entityType == "HIASBCH" else "NA",
-                "HIASCDI": entity if entityType == "HIASCDI" else "NA",
-                "HIASHDI": entity if entityType == "HIASHDI" else "NA",
-                "Agent": entity if entityType == "Agent" else "NA",
-                "Application": entity if entityType == "Application" else "NA",
-                "Device": entity if entityType == "Device" else "NA",
-                "Staff": entity if entityType == "Staff" else "NA",
-                "Robotics": entity if entityType == "Robotics" else "NA",
+                "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+                "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+                "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+                "Agent": entity if entity_type == "Agent" else "NA",
+                "Application": entity if entity_type == "Application" else "NA",
+                "Device": entity if entity_type == "Device" else "NA",
+                "Staff": entity if entity_type == "Staff" else "NA",
+                "Robotics": entity if entity_type == "Robotics" else "NA",
                 "Sensor": data["Sensor"],
                 "Type": data["Type"],
                 "Value": data["Value"],
@@ -616,12 +615,12 @@ class agent(AbstractAgent):
             })
 
             self.helpers.logger.info(
-                entityType + " " + entity + " BCI data update OK")
+                entity_type + " " + entity + " BCI data update OK")
         else:
             self.helpers.logger.error(
-                entityType + " " + entity + " BCI data update KO")
+                entity_type + " " + entity + " BCI data update KO")
 
-    def aiModelCallback(self, topic, payload):
+    def ai_model_callback(self, topic, payload):
         """Called in the event of an AI payload
 
         Args:
@@ -630,65 +629,65 @@ class agent(AbstractAgent):
         """
 
         data = json.loads(payload.decode("utf-8"))
-        splitTopic = topic.split("/")
+        split_topic = topic.split("/")
 
-        if splitTopic[1] not in self.ignoreTypes:
-            entityType = splitTopic[1][:-1]
+        if split_topic[1] not in self.ignore_types:
+            entity_type = split_topic[1][:-1]
         else:
-            entityType = splitTopic[1]
+            entity_type = split_topic[1]
 
-        if entityType in ["Robotics", "Application", "Staff"]:
-            entity = splitTopic[2]
+        if entity_type in ["Robotics", "Application", "Staff"]:
+            entity = split_topic[2]
         else:
-            entity = splitTopic[3]
+            entity = split_topic[3]
 
         self.helpers.logger.info(
-            "Received " + entityType + " AI Data: " + str(data))
+            "Received " + entity_type + " AI Data: " + str(data))
 
-        attrs = self.getRequiredAttributes(entityType, entity)
+        attrs = self.get_attributes(entity_type, entity)
         bch = attrs["blockchain"]
 
-        if not self.hiasbch.iotJumpWayAccessCheck(bch):
+        if not self.hiasbch.iotjumpway_access_check(bch):
             return
 
         entity = attrs["id"]
         location = attrs["location"]
         zone = attrs["zone"] if "zone" in attrs else "NA"
 
-        updateResponse = self.hiascdi.updateEntity(
-            entity, entityType, {
+        update_response = self.hiascdi.update_entity(
+            entity, entity_type, {
                 "network.status": {"value": "ONLINE"},
                 "network.status.metadata": {"timestamp": datetime.now().isoformat()},
                 "dateModified": {"value": datetime.now().isoformat()}
             })
 
-        models = self.hiascdi.getAiModels(entity, entityType)
-        modelData = models["models"]["value"]
+        models = self.hiascdi.get_ai_models(entity, entity_type)
+        model_data = models["models"]["value"]
         modelExists = False
 
-        for model in modelData:
+        for model in model_data:
             modelExists = True
-            if model == data["Model"] and data["State"] in modelData[data["Model"]]["states"]["value"]:
-                modelData[data["Model"]]["state"] = {
+            if model == data["Model"] and data["State"] in model_data[data["Model"]]["states"]["value"]:
+                model_data[data["Model"]]["state"] = {
                     "value": data["State"],
                     "timestamp": datetime.now().isoformat()
                 }
-            if model == data["Model"] and data["Type"] in modelData[data["Model"]]["properties"]["value"]:
-                modelData[data["Model"]]["properties"]["value"][data["Type"]] = {
+            if model == data["Model"] and data["Type"] in model_data[data["Model"]]["properties"]["value"]:
+                model_data[data["Model"]]["properties"]["value"][data["Type"]] = {
                     "value": data["Value"],
                     "timestamp": datetime.now().isoformat()
                 }
 
         if modelExists:
-            updateResponse = self.hiascdi.updateEntity(
-                entity, entityType, {
-                    "models": {"value": modelData},
+            update_response = self.hiascdi.update_entity(
+                entity, entity_type, {
+                    "models": {"value": model_data},
                     "dateModified": {"value": datetime.now().isoformat()}
                 })
 
-            if updateResponse:
-                _id = self.hiashdi.insertData("AI", {
-                    "Use": entityType,
+            if update_response:
+                _id = self.hiashdi.insert_data("AI", {
+                    "Use": entity_type,
                     "Location": location,
                     "Zone": zone,
                     "Agent": entity,
@@ -699,12 +698,12 @@ class agent(AbstractAgent):
                 })
 
                 self.helpers.logger.info(
-                    entityType + " " + entity + " AI model data update OK")
+                    entity_type + " " + entity + " AI model data update OK")
             else:
                 self.helpers.logger.error(
-                    entityType + " " + entity + " AI model data update KO")
+                    entity_type + " " + entity + " AI model data update KO")
 
-    def stateCallback(self, topic, payload):
+    def state_callback(self, topic, payload):
         """Called in the event of an state payload
 
         Args:
@@ -713,33 +712,33 @@ class agent(AbstractAgent):
         """
 
         data = json.loads(payload.decode("utf-8"))
-        splitTopic = topic.split("/")
+        split_topic = topic.split("/")
 
-        if splitTopic[1] not in self.ignoreTypes:
-            entityType = splitTopic[1][:-1]
+        if split_topic[1] not in self.ignore_types:
+            entity_type = split_topic[1][:-1]
         else:
-            entityType = splitTopic[1]
+            entity_type = split_topic[1]
 
-        if entityType in ["Robotics", "Application", "Staff"]:
-            entity = splitTopic[2]
+        if entity_type in ["Robotics", "Application", "Staff"]:
+            entity = split_topic[2]
         else:
-            entity = splitTopic[3]
+            entity = split_topic[3]
 
         self.helpers.logger.info(
-            "Received " + entityType + " State Data: " + str(data))
+            "Received " + entity_type + " State Data: " + str(data))
 
-        attrs = self.getRequiredAttributes(entityType, entity)
+        attrs = self.get_attributes(entity_type, entity)
         bch = attrs["blockchain"]
 
-        if not self.hiasbch.iotJumpWayAccessCheck(bch):
+        if not self.hiasbch.iotjumpway_access_check(bch):
             return
 
         entity = attrs["id"]
         location = attrs["location"]
         zone = attrs["zone"] if "zone" in attrs else "NA"
 
-        updateResponse = self.hiascdi.updateEntity(
-            entity, entityType, {
+        update_response = self.hiascdi.update_entity(
+            entity, entity_type, {
                 "network.status": {"value": "ONLINE"},
                 "network.status.metadata": {"timestamp": datetime.now().isoformat()},
                 "dateModified": {
@@ -748,44 +747,44 @@ class agent(AbstractAgent):
                 }
             })
 
-        actuators = self.hiascdi.getActuators(entity, entityType)
-        actuatorData = actuators["actuators"]["value"]
-        commandExists = False
+        actuators = self.hiascdi.get_actuators(entity, entity_type)
+        actuator_data = actuators["actuators"]["value"]
+        exists = False
 
         i = 0
-        for actuator in actuatorData:
-            commandExists = True
+        for actuator in actuator_data:
+            exists = True
             if data["Name"] in actuator["name"]["value"] and data["Type"].lower() in actuator["commands"] \
                 and data["Value"].lower() in actuator["commands"][data["Type"]]:
-                actuatorData[i]["state"] = {
+                actuator_data[i]["state"] = {
                     "value": data["Value"],
                     "timestamp": datetime.now().isoformat()
                 }
             i = i + 1
 
-        if commandExists:
-            updateResponse = self.hiascdi.updateEntity(
-                entity, entityType, {
-                    "actuators": {"value": actuatorData},
+        if exists:
+            update_response = self.hiascdi.update_entity(
+                entity, entity_type, {
+                    "actuators": {"value": actuator_data},
                     "dateModified": {
                         "type": "DateTime",
                         "value": datetime.now().isoformat()
                     }
                 })
 
-            if updateResponse:
-                _id = self.hiashdi.insertData("Actuators", {
-                    "Use": entityType,
+            if update_response:
+                _id = self.hiashdi.insert_data("Actuators", {
+                    "Use": entity_type,
                     "Location": location,
                     "Zone": zone,
-                    "HIASBCH": entity if entityType == "HIASBCH" else "NA",
-                    "HIASCDI": entity if entityType == "HIASCDI" else "NA",
-                    "HIASHDI": entity if entityType == "HIASHDI" else "NA",
-                    "Agent": entity if entityType == "Agent" else "NA",
-                    "Application": entity if entityType == "Application" else "NA",
-                    "Device": entity if entityType == "Device" else "NA",
-                    "Staff": entity if entityType == "Staff" else "NA",
-                    "Robotics": entity if entityType == "Robotics" else "NA",
+                    "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+                    "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+                    "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+                    "Agent": entity if entity_type == "Agent" else "NA",
+                    "Application": entity if entity_type == "Application" else "NA",
+                    "Device": entity if entity_type == "Device" else "NA",
+                    "Staff": entity if entity_type == "Staff" else "NA",
+                    "Robotics": entity if entity_type == "Robotics" else "NA",
                     "Actuator": data["Name"],
                     "Type": data["Type"],
                     "Value": data["Value"],
@@ -803,15 +802,16 @@ class agent(AbstractAgent):
                 })
 
                 self.helpers.logger.info(
-                    entityType + " " + entity + " state data update OK")
+                    entity_type + " " + entity + " state data update OK")
             else:
                 self.helpers.logger.error(
-                    entityType + " " + entity + " state data update KO")
+                    entity_type + " " + entity + " state data update KO")
 
     def respond(self, responseCode, response):
         """ Returns the request repsonse """
 
-        return Response(response=json.dumps(response, indent=4), status=responseCode,
+        return Response(response=json.dumps(response, indent=4),
+                        status=responseCode,
                         mimetype="application/json")
 
     def signal_handler(self, signal, frame):
@@ -844,10 +844,10 @@ def main():
     signal.signal(signal.SIGINT, agent.signal_handler)
     signal.signal(signal.SIGTERM, agent.signal_handler)
 
-    agent.hiascdiConn()
-    agent.hiashdiConn()
-    agent.hiasbchConn()
-    agent.mqttConn({
+    agent.hiascdi_connection()
+    agent.hiashdi_connection()
+    agent.hiasbch_connection()
+    agent.mqtt_connection({
         "host": agent.credentials["iotJumpWay"]["host"],
         "port": agent.credentials["iotJumpWay"]["port"],
         "location": agent.credentials["iotJumpWay"]["location"],
@@ -858,14 +858,14 @@ def main():
         "up": agent.credentials["iotJumpWay"]["up"]
     })
 
-    agent.mqtt.actuatorCallback = agent.actuatorCallback
-    agent.mqtt.aiModelCallback = agent.aiModelCallback
-    agent.mqtt.bciCallback = agent.bciCallback
-    agent.mqtt.commandsCallback = agent.commandsCallback
-    agent.mqtt.lifeCallback = agent.lifeCallback
-    agent.mqtt.sensorsCallback = agent.sensorsCallback
-    agent.mqtt.stateCallback = agent.stateCallback
-    agent.mqtt.statusCallback = agent.statusCallback
+    agent.mqtt.actuator_callback = agent.actuator_callback
+    agent.mqtt.ai_model_callback = agent.ai_model_callback
+    agent.mqtt.bci_callback = agent.bci_callback
+    agent.mqtt.comands_callback = agent.comands_callback
+    agent.mqtt.life_callback = agent.life_callback
+    agent.mqtt.sensors_callback = agent.sensors_callback
+    agent.mqtt.state_callback = agent.state_callback
+    agent.mqtt.status_callback = agent.status_callback
 
     agent.threading()
 
