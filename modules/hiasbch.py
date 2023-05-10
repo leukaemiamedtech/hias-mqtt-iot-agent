@@ -6,8 +6,7 @@ to communicate with the HIASBCH Blockchain.
 
 MIT License
 
-Copyright (c) 2021 Asociación de Investigacion en Inteligencia Artificial
-Para la Leucemia Peter Moss
+Copyright (c) 2023 Peter Moss Leukaemia MedTech Research CIC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files(the "Software"), to deal
@@ -32,7 +31,6 @@ Contributors:
 
 """
 
-import bcrypt
 import json
 import sys
 import time
@@ -60,11 +58,13 @@ class hiasbch():
     def start(self):
         """ Connects to HIASBCH. """
 
-        self.w3 = Web3(Web3.HTTPProvider("https://" + self.credentials["server"]["host"] + self.credentials["hiasbch"]["endpoint"], request_kwargs={
+        self.w3 = Web3(Web3.HTTPProvider(
+            "http://" + self.credentials["server"]["host"] + self.credentials["hiasbch"]["endpoint"], request_kwargs={
                         'auth': HTTPBasicAuth(self.credentials["iotJumpWay"]["entity"],
                                               self.confs["agent"]["proxy"]["up"])}))
-        self.iotContract = self.w3.eth.contract(self.w3.toChecksumAddress(self.credentials["hiasbch"]["contracts"]["iotJumpWay"]["contract"]),
-                                                abi=json.dumps(self.credentials["hiasbch"]["contracts"]["iotJumpWay"]["abi"]))
+        self.iotContract = self.w3.eth.contract(
+            self.w3.toChecksumAddress(self.credentials["hiasbch"]["contracts"]["iotJumpWay"]["contract"]),
+            abi=json.dumps(self.credentials["hiasbch"]["contracts"]["iotJumpWay"]["abi"]))
         self.helpers.logger.info("HIASBCH connections started")
 
     def iotjumpway_access_check(self, address):
