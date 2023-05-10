@@ -6,8 +6,7 @@ iotJumpWay brokers.
 
 MIT License
 
-Copyright (c) 2021 Asociación de Investigacion en Inteligencia Artificial
-Para la Leucemia Peter Moss
+Copyright (c) 2023 Peter Moss Leukaemia MedTech Research CIC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files(the "Software"), to deal
@@ -38,13 +37,16 @@ import requests
 import ssl
 import threading
 
-from abc import ABC, abstractmethod
+from datetime import datetime
+from flask import Response
 
 from modules.helpers import helpers
 from modules.hiasbch import hiasbch
 from modules.hiascdi import hiascdi
 from modules.hiashdi import hiashdi
 from modules.mqtt import mqtt
+
+from abc import ABC, abstractmethod
 
 
 class AbstractAgent(ABC):
@@ -62,8 +64,17 @@ class AbstractAgent(ABC):
         self.hiashdi = None
         self.mqtt = None
 
-        self.app_types = ["Robotics", "Application", "Staff"]
-        self.ignore_types = ["Robotics", "HIASCDI", "HIASHDI", "HIASBCH", "Staff"]
+        self.app_types = [
+            "Robotics",
+            "Application",
+            "Staff"]
+
+        self.ignore_types = [
+            "Robotics",
+            "HIASCDI",
+            "HIASHDI",
+            "HIASBCH",
+            "Staff"]
 
         self.helpers = helpers("Agent")
         self.confs = self.helpers.confs
@@ -90,7 +101,8 @@ class AbstractAgent(ABC):
     def mqtt_connection(self, credentials):
         """Initializes the HIAS MQTT connection. """
 
-        self.mqtt = mqtt(self.helpers, "Agent", credentials)
+        self.mqtt = mqtt(
+            self.helpers, "Agent", credentials)
         self.mqtt.configure()
         self.mqtt.start()
 
@@ -103,11 +115,89 @@ class AbstractAgent(ABC):
         self.hiasbch = hiasbch(self.helpers)
         self.hiasbch.start()
         self.hiasbch.w3.geth.personal.unlockAccount(
-            self.hiasbch.w3.toChecksumAddress(self.credentials["hiasbch"]["un"]),
-            self.credentials["hiasbch"]["up"], 0)
+            self.hiasbch.w3.toChecksumAddress(
+                self.credentials["hiasbch"]["un"]),
+                self.credentials["hiasbch"]["up"], 0)
 
         self.helpers.logger.info(
             "HIAS HIASBCH Blockchain connection created.")
+
+    def check_accepts_type(self, headers):
+        """ Checks the request Accept types. """
+
+        accepted = headers.getlist('accept')
+        accepted = accepted[0].split(",")
+
+        if "Accept" not in headers:
+            return False
+
+        for i, ctype in enumerate(accepted):
+            if ctype not in self.helpers.confs["acceptTypes"]:
+                accepted.pop(i)
+
+        if len(accepted):
+            return accepted
+        else:
+            return False
+
+    def check_content_type(self, headers):
+        """ Checks the request Content-Type. """
+
+        content_type = headers["Content-Type"]
+
+        if ("Content-Type" not in headers or content_type not in
+                self.helpers.confs["contentTypes"]):
+            return False
+        return content_type
+
+    def check_body(self, payload, text=False):
+        """ Checks the request body is valid. """
+
+        response = False
+        message = "valid"
+
+        if text is False:
+            try:
+                json_object = json.loads(json.dumps(
+                    payload.json))
+                response = json_object
+            except TypeError as e:
+                response = False
+                message = "invalid"
+        else:
+            if payload.data == "":
+                response = False
+                message = "invalid"
+            else:
+                response = payload.data
+
+        self.helpers.logger.info("Request data " + message)
+
+        return response
+
+    def get_entity_details(self, split_topic):
+        """Determines entity type and entity from topic
+
+        Args:
+            split_topic (list): List of topic parts
+
+        Returns:
+            entity_type: The type of the entity
+            entity: The id of the entity
+
+        """
+
+        if split_topic[1] not in self.ignore_types:
+            entity_type = split_topic[1][:-1]
+        else:
+            entity_type = split_topic[1]
+
+        if entity_type in self.app_types:
+            entity = split_topic[2]
+        else:
+            entity = split_topic[3]
+
+        return entity_type, entity
 
     def get_attributes(self, entity_type, entity):
         """Gets entity attributes from HIASCDI.
@@ -124,22 +214,53 @@ class AbstractAgent(ABC):
         attrs = self.hiascdi.get_attributes(entity_type, entity)
 
         rattrs = {}
+        rattrs["id"] = attrs["id"]
+        rattrs["type"] = attrs["type"]
+        rattrs["blockchain"] = attrs["authenticationBlockchainUser"]["value"]
+        rattrs["location"] = attrs["networkLocation"]["value"]
 
-        if entity_type in self.app_types:
-            rattrs["id"] = attrs["id"]
-            rattrs["type"] = attrs["type"]
-            rattrs["blockchain"] = attrs["authenticationBlockchainUser"]["value"]
-            rattrs["location"] = attrs["networkLocation"]["value"]
-        else:
-            rattrs["id"] = attrs["id"]
-            rattrs["type"] = attrs["type"]
-            rattrs["blockchain"] = attrs["authenticationBlockchainUser"]["value"]
-            rattrs["location"] = attrs["networkLocation"]["value"]
+        if entity_type not in self.app_types:
             rattrs["zone"] = attrs["networkZone"]["value"]
 
         return rattrs
+    
+    def parse_payload(self, payload, topic):
+        """Decodes the payload and splits the topic
 
-    def life(self):
+        Args:
+            topic (str): The topic the payload was sent to.
+            payload (:obj:`str`): The payload.
+        """
+
+        data = json.loads(payload.decode("utf-8"))
+        split_topic = topic.split("/")
+
+        return data, split_topic
+    
+    def process_request(self, split_topic):
+        """Decodes the payload and splits the topic
+
+        Args:
+            split_topic (str): The split topic.
+        """
+
+        entity_type, entity = self.get_entity_details(
+            split_topic)
+
+        self.helpers.logger.info(
+            "Received " + entity_type  + " status data payload")
+
+        attrs = self.get_attributes(
+            entity_type, entity)
+
+        entity = attrs["id"]
+        location = attrs["location"]
+        zone = attrs["zone"] if "zone" in attrs else "NA"
+        bch = attrs["blockchain"]
+
+        return entity_type, entity, location, zone, bch
+
+    def publish_life(self):
         """ Publishes entity statistics to HIAS. """
 
         cpu = psutil.cpu_percent()
@@ -166,10 +287,109 @@ class AbstractAgent(ABC):
         })
 
         self.helpers.logger.info("Agent life statistics published.")
-        threading.Timer(300.0, self.life).start()
+        threading.Timer(300.0, self.publish_life).start()
 
     def threading(self):
         """ Creates required module threads. """
 
         # Life thread
-        threading.Timer(10.0, self.life).start()
+        threading.Timer(10.0, self.publish_life).start()
+
+    def respond(self, responseCode, response, accepted):
+        """ Builds the request response """
+
+        headers = {}
+        if "application/json" in accepted:
+            response =  Response(
+                response=response, status=responseCode,
+                mimetype="application/json")
+            headers['Content-Type'] = 'application/json'
+        elif "text/plain" in accepted:
+            response = self.broker.prepareResponse(response)
+            response = Response(
+                response=response, status=responseCode,
+                    mimetype="text/plain")
+            headers['Content-Type'] = 'text/plain; charset=utf-8'
+        response.headers = headers
+        return response
+    
+    @abstractmethod
+    def status_callback(self, topic, payload):
+        """Called in the event of a status payload
+
+        Args:
+            topic (str): The topic the payload was sent to.
+            payload (:obj:`str`): The payload.
+        """
+        pass
+    
+    @abstractmethod
+    def life_callback(self, topic, payload):
+        """Called in the event of a life payload
+
+        Args:
+            topic (str): The topic the payload was sent to.
+            payload (:obj:`str`): The payload.
+        """
+        pass
+    
+    @abstractmethod
+    def comands_callback(self, topic, payload):
+        """
+        iotJumpWay Device Commands Callback
+
+        The callback function that is triggerend in the event of an device
+        command communication from the iotJumpWay.
+
+        Args:
+            topic (str): The topic the payload was sent to.
+            payload (:obj:`str`): The payload.
+        """
+        pass
+
+    @abstractmethod
+    def notifications_callback(self, topic, payload):
+        """Called in the event of an notifications payload
+
+        Args:
+            topic (str): The topic the payload was sent to.
+            payload (:obj:`str`): The payload.
+        """
+        pass
+
+    @abstractmethod
+    def actuators_callback(self, topic, payload):
+        """Called in the event of an actuator payload
+
+        Args:
+            topic (str): The topic the payload was sent to.
+            payload (:obj:`str`): The payload.
+        """
+        pass
+
+    @abstractmethod
+    def sensors_callback(self, topic, payload):
+        """Called in the event of a sensor payload
+
+        Args:
+            topic (str): The topic the payload was sent to.
+            payload (:obj:`str`): The payload.
+        """
+            
+    @abstractmethod
+    def state_callback(self, topic, payload):
+        """Called in the event of a state payload
+
+        Args:
+            topic (str): The topic the payload was sent to.
+            payload (:obj:`str`): The payload.
+        """
+            
+    @abstractmethod
+    def classification_callback(self, topic, payload):
+        """Called in the event of a classification payload
+
+        Args:
+            topic (str): The topic the payload was sent to.
+            payload (:obj:`str`): The payload.
+        """
