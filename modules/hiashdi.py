@@ -6,8 +6,7 @@ to communicate with the HIASHDI Historical Data Interface.
 
 MIT License
 
-Copyright (c) 2021 Asociación de Investigacion en Inteligencia Artificial
-Para la Leucemia Peter Moss
+Copyright (c) 2023 Peter Moss Leukaemia MedTech Research CIC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files(the "Software"), to deal
@@ -34,6 +33,8 @@ Contributors:
 
 import json
 import requests
+
+from datetime import datetime
 
 
 class hiashdi():
@@ -62,7 +63,7 @@ class hiashdi():
     def insert_data(self, typeof, data):
         """ Inserts data into HIASHDI. """
 
-        api_host = "https://" + self.helpers.credentials["server"]["host"] + "/" + \
+        api_host = "http://" + self.helpers.credentials["server"]["host"] + "/" + \
                     self.helpers.credentials["hiashdi"]["endpoint"]
         api_endpoint = "/data?type=" + typeof
         api_url = api_host + api_endpoint
@@ -74,3 +75,195 @@ class hiashdi():
             return response.headers["Id"]
         else:
             return False
+        
+    def entity_status_data(self, entity, entity_type, location, zone, status):
+        
+        return {
+            "Use": entity_type,
+            "Location": location,
+            "Zone": zone,
+            "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+            "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+            "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+            "Agent": entity if entity_type == "Agent" else "NA",
+            "AiAgent": entity if entity_type == "AiAgent" else "NA",
+            "Application": entity if entity_type == "Application" else "NA",
+            "Device": entity if entity_type == "Device" else "NA",
+            "Staff": entity if entity_type == "Staff" else "NA",
+            "Robotics": entity if entity_type == "Robotics" else "NA",
+            "Status": status,
+            "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+    def entity_life_data(self, entity, entity_type, location, zone, data):
+        
+        return {
+            "Use": entity_type,
+            "Location": location,
+            "Zone": zone,
+            "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+            "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+            "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+            "Agent": entity if entity_type == "Agent" else "NA",
+            "AiAgent": entity if entity_type == "AiAgent" else "NA",
+            "Application": entity if entity_type == "Application" else "NA",
+            "Device": entity if entity_type == "Device" else "NA",
+            "Staff": entity if entity_type == "Staff" else "NA",
+            "Robotics": entity if entity_type == "Robotics" else "NA",
+            "Data": data,
+            "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+    def entity_actuator_data(self, entity, entity_type, location, zone, data):
+        
+        return {
+            "Use": entity_type,
+            "Location": location,
+            "Zone": zone,
+            "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+            "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+            "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+            "Agent": entity if entity_type == "Agent" else "NA",
+            "AiAgent": entity if entity_type == "AiAgent" else "NA",
+            "Application": entity if entity_type == "Application" else "NA",
+            "Device": entity if entity_type == "Device" else "NA",
+            "Staff": entity if entity_type == "Staff" else "NA",
+            "Robotics": entity if entity_type == "Robotics" else "NA",
+            "Actuator": data["Name"],
+            "Type": data["Type"],
+            "Value": data["Value"],
+            "Message": data["Message"],
+            "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+    def entity_actuator_command_data(self, entity, entity_type, location, zone, data):
+        
+        return {
+            "Use": data["Use"],
+            "From": entity,
+            "Location": location,
+            "Zone": zone,
+            "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+            "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+            "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+            "Agent": entity if entity_type == "Agent" else "NA",
+            "AiAgent": entity if entity_type == "AiAgent" else "NA",
+            "Application": entity if entity_type == "Application" else "NA",
+            "Device": entity if entity_type == "Device" else "NA",
+            "Staff": entity if entity_type == "Staff" else "NA",
+            "Robotics": entity if entity_type == "Robotics" else "NA",
+            "Property": data["Property"],
+            "Type": data["Type"],
+            "Value": data["Value"],
+            "Message": data["Message"],
+            "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+    def entity_sensor_data(self, entity, entity_type, location, zone, data):
+        
+        return {
+            "Use": entity_type,
+            "Location": location,
+            "Zone": zone,
+            "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+            "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+            "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+            "Agent": entity if entity_type == "Agent" else "NA",
+            "AiAgent": entity if entity_type == "AiAgent" else "NA",
+            "Application": entity if entity_type == "Application" else "NA",
+            "Device": entity if entity_type == "Device" else "NA",
+            "Staff": entity if entity_type == "Staff" else "NA",
+            "Robotics": entity if entity_type == "Robotics" else "NA",
+            "Sensor": data["Sensor"],
+            "Type": data["Type"],
+            "Value": data["Value"],
+            "Message": data["Message"],
+            "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+    def entity_notification_data(self, entity, entity_type, location, zone, data):
+        
+        return {
+            "Use": entity_type,
+            "Location": location,
+            "Zone": zone,
+            "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+            "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+            "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+            "Agent": entity if entity_type == "Agent" else "NA",
+            "AiAgent": entity if entity_type == "AiAgent" else "NA",
+            "Application": entity if entity_type == "Application" else "NA",
+            "Device": entity if entity_type == "Device" else "NA",
+            "Staff": entity if entity_type == "Staff" else "NA",
+            "Robotics": entity if entity_type == "Robotics" else "NA",
+            "Type": data["Type"],
+            "Value": data["State"],
+            "Message": data["Message"],
+            "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+    def entity_ai_model_data(self, entity, entity_type, location, zone, data):
+        
+        return {
+            "Use": entity_type,
+            "Location": location,
+            "Zone": zone,
+            "AiAgent": entity,
+            "Type": data["Type"] if "Type" in data else "State",
+            "Value": data["Value"] if "Value" in data else data["State"],
+            "Message": data["Message"],
+            "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+    def entity_state_data(self, entity, entity_type, location, zone, data):
+        return {
+                "Use": entity_type,
+                "Location": location,
+                "Zone": zone,
+                "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+                "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+                "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+                "Agent": entity if entity_type == "Agent" else "NA",
+                "AiAgent": entity if entity_type == "AiAgent" else "NA",
+                "Application": entity if entity_type == "Application" else "NA",
+                "Device": entity if entity_type == "Device" else "NA",
+                "Staff": entity if entity_type == "Staff" else "NA",
+                "Robotics": entity if entity_type == "Robotics" else "NA",
+                "Type": data["Type"],
+                "Value": data["State"],
+                "Message": data["Message"],
+                "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+        
+    def entity_notification_data(self, location, data):
+        
+        return {
+            "Use": data["Use"],
+            "From": data["From"],
+            "To": data["To"],
+            "Location": location,
+            "Application": data["To"] if data["Use"] == "Application" else "NA",
+            "Staff": data["To"] if data["Use"] == "Application" else "NA",
+            "Message": data["Message"],
+            "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+    def entity_bci_data(self, entity, entity_type, location, zone, data):
+        return {
+            "Use": entity_type,
+            "Location": location,
+            "Zone": zone,
+            "HIASBCH": entity if entity_type == "HIASBCH" else "NA",
+            "HIASCDI": entity if entity_type == "HIASCDI" else "NA",
+            "HIASHDI": entity if entity_type == "HIASHDI" else "NA",
+            "Agent": entity if entity_type == "Agent" else "NA",
+            "Application": entity if entity_type == "Application" else "NA",
+            "Device": entity if entity_type == "Device" else "NA",
+            "Staff": entity if entity_type == "Staff" else "NA",
+            "Robotics": entity if entity_type == "Robotics" else "NA",
+            "Sensor": data["Sensor"],
+            "Type": data["Type"],
+            "Value": data["Value"],
+            "Message": data["Message"],
+            "Time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }

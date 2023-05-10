@@ -12,7 +12,7 @@ You will need to ensure you have the following prerequisites installed and setup
 
 ## HIAS Core
 
-The HIAS MQTT IoT Agent is a component of the [HIAS - Hospital Intelligent Automation Server](https://github.com/aiial/hias-core). Before beginning this tutorial you should complete the [HIAS Core](https://hias-core.readthedocs.io/en/latest/installation/ubuntu/) installation guide ensure your HIAS server is online.
+The HIAS MQTT IoT Agent is a component of the [HIAS - Hospital Intelligent Automation Server](https://github.com/leukaemiamedtech/hias-core). Before beginning this tutorial you should complete the [HIAS Core](https://hias-core.readthedocs.io/en/latest/installation/ubuntu/) installation guide ensure your HIAS server is online.
 
 &nbsp;
 
@@ -21,12 +21,12 @@ You are now ready to install the HIAS MQTT IoT Agent software.
 
 ## Clone the repository
 
-Clone the [HIAS MQTT IoT Agent](https://github.com/aiial/hias-mqtt-iot-agent " HIAS MQTT IoT Agent") repository from the [Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss](https://github.com/aiial "Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss") Github Organization to your HIAS project root.
+Clone the [HIAS MQTT IoT Agent](https://github.com/leukaemiamedtech/hias-mqtt-iot-agent " HIAS MQTT IoT Agent") repository from the [Peter Moss Leukaemia MedTech Research CIC](https://github.com/leukaemiamedtech "Peter Moss Leukaemia MedTech Research CIC") Github Organization to your HIAS project root.
 
 To clone the repository and install the project, make sure you have Git installed. Now navigate to your HIAS Core project root and then use the following command.
 
 ``` bash
- git clone https://github.com/aiial/hias-mqtt-iot-agent.git
+ git clone https://github.com/leukaemiamedtech/hias-mqtt-iot-agent.git
  mv hias-mqtt-iot-agent components/agents/mqtt
 ```
 
@@ -84,6 +84,7 @@ The final configuration you have to do is in the **configuration/config.json** f
 ``` json
 {
     "agent": {
+        "secure": true,
         "params": [],
         "api": {
             "content": "application/json"
@@ -98,7 +99,7 @@ The final configuration you have to do is in the **configuration/config.json** f
 You need to add the following:
 
 - **agent->proxy:** IoT Agent API Key
-
+- **agent->secure:** Specify true if connecting securely or false if connecting locally without encryption.
 &nbsp;
 
 # Service
@@ -116,24 +117,24 @@ Now you can continue with the HIAS [usage guide](../usage/ubuntu.md)
 &nbsp;
 
 # Contributing
-Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss encourages and welcomes code contributions, bug fixes and enhancements from the Github community.
+Peter Moss Leukaemia MedTech Research CIC encourages and welcomes code contributions, bug fixes and enhancements from the Github community.
 
-Please read the [CONTRIBUTING](https://github.com/aiial/hias-mqtt-iot-agent/blob/main/CONTRIBUTING.md "CONTRIBUTING") document for a full guide to forking our repositories and submitting your pull requests. You will also find our code of conduct in the [Code of Conduct](https://github.com/aiial/hias-mqtt-iot-agent/blob/main/CODE-OF-CONDUCT.md) document.
+Please read the [IOT AGENT CONTRIBUTING](https://github.com/leukaemiamedtech/contributing-guides/blob/main/CONTRIBUTING-GUIDE-IOT-AGENTS.md "IOT AGENT CONTRIBUTING") guide for a full guide to contributing to our IoT Agent projects. You will also find our code of conduct in the [CODE OF CONDUCT](https://github.com/leukaemiamedtech/contributing-guides/blob/main/CODE-OF-CONDUCT.md) document.
 
 ## Contributors
-- [Adam Milton-Barker](https://www.leukemiaairesearch.com/association/volunteers/adam-milton-barker "Adam Milton-Barker") - [Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss](https://www.leukemiaresearchassociation.ai "Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss") President/Founder & Lead Developer, Sabadell, Spain
+- [Adam Milton-Barker](https://www.leukaemiamedtechresearch.org.uk/about/volunteers/adam-milton-barker "Adam Milton-Barker") - [Peter Moss Leukaemia MedTech Research CIC](https://www.leukaemiamedtechresearch.org.uk "Peter Moss Leukaemia MedTech Research CIC") Founder & Managing Director.
 
 &nbsp;
 
 # Versioning
-We use SemVer for versioning.
+We use [SemVer](https://semver.org/) for versioning.
 
 &nbsp;
 
 # License
-This project is licensed under the **MIT License** - see the [LICENSE](https://github.com/aiial/hias-mqtt-iot-agent/blob/main/LICENSE "LICENSE") file for details.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE "LICENSE") file for details.
 
 &nbsp;
 
 # Bugs/Issues
-We use the [repo issues](https://github.com/aiial/hias-mqtt-iot-agent/issues "repo issues") to track bugs and general requests related to using this project. See [CONTRIBUTING](https://github.com/aiial/hias-mqtt-iot-agent/CONTRIBUTING.md "CONTRIBUTING") for more info on how to submit bugs, feature requests and proposals.
+We use the [repo issues](https://github.com/leukaemiamedtech/hias-mqtt-iot-agent/issues/new/choose "repo issues") to track bugs and general requests related to using this project. See [IOT AGENT CONTRIBUTING](https://github.com/leukaemiamedtech/contributing-guides/blob/main/CONTRIBUTING-GUIDE-IOT-AGENTS.md "IOT AGENT CONTRIBUTING") guide for more info on how to submit bugs, feature requests and proposals.
