@@ -1,9 +1,9 @@
-# Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss
+# Peter Moss MedTech Research Project
 ## HIAS MQTT IoT Agent
 
-![HIAS MQTT IoT Agent](assets/images/project-banner.jpg)
+![HIAS MQTT IoT Agent](assets/img/project-banner.jpg)
 
-[![CURRENT RELEASE](https://img.shields.io/badge/CURRENT%20RELEASE-3.1.1-blue.svg)](https://github.com/aiial/hias-mqtt-iot-agent/tree/release-3.1.1) [![UPCOMING RELEASE](https://img.shields.io/badge/DEV%20BRANCH-develop-blue.svg)](https://github.com/aiial/hias-mqtt-iot-agent/tree/develop) [![Contributions Welcome!](https://img.shields.io/badge/Contributions-Welcome-lightgrey.svg)](CONTRIBUTING.md)  [![Issues](https://img.shields.io/badge/Issues-Welcome-lightgrey.svg)](issues)
+[![CURRENT RELEASE](https://img.shields.io/badge/CURRENT%20RELEASE-4.0.0-blue.svg)](https://github.com/leukaemiamedtech/hias-mqtt-iot-agent/tree/release-4.0.0) [![UPCOMING RELEASE](https://img.shields.io/badge/DEV%20BRANCH-develop-blue.svg)](https://github.com/leukaemiamedtech/hias-mqtt-iot-agent/tree/develop) [![Contributions Welcome!](https://img.shields.io/badge/Contributions-Welcome-lightgrey.svg)](CONTRIBUTING.md)  [![Issues](https://img.shields.io/badge/Issues-Welcome-lightgrey.svg)](issues)
 
  [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/) [![Documentation Status](https://readthedocs.org/projects/hias-mqtt-iot-agent/badge/?version=latest)](https://hias-mqtt-iot-agent.readthedocs.io/en/latest/?badge=latest)
  [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4994/badge)](https://bestpractices.coreinfrastructure.org/projects/4994)
@@ -43,7 +43,7 @@ The protocol is publish-subscribe (Pub/Sub) communication protocol that runs ove
 
 # HIAS
 
-![HIAS - Hospital Intelligent Automation Server](assets/images/hias-network-v3.jpg)
+![HIAS - Hospital Intelligent Automation Server](assets/img/hias-network-v3.jpg)
 
 [HIAS - Hospital Intelligent Automation Server](https://github.com/aiial/HIAS-Core) is an open-source server for hospitals and medical centers, designed to control and manage a network of intelligent IoT connected devices and applications.
 
@@ -53,13 +53,13 @@ The HIAS iotJumpWay IoT Agents are based on FIWARE IoT Agents and are a selectio
 
 Each IoT Agent provides a North & South Port interface that allows communication to and from the Context Broker.
 
-![SOUTHBOUND TRAFFIC (COMMANDS)](assets/images/southbound.jpg)
+![SOUTHBOUND TRAFFIC (COMMANDS)](assets/img/southbound.jpg)
 
 __Source: [FIWARE IoT Agents](https://fiware-tutorials.readthedocs.io/en/latest/iot-agent/index.html)__
 
 The North Port interface of an IoT Agent listens to southbound traffic coming from the Context Broker towards the devices and applications.
 
-![NORTHBOUND TRAFFIC (MEASUREMENTS)](assets/images/southbound.jpg)
+![NORTHBOUND TRAFFIC (MEASUREMENTS)](assets/img/southbound.jpg)
 
 __Source: [FIWARE IoT Agents](https://fiware-tutorials.readthedocs.io/en/latest/iot-agent/index.html)__
 
@@ -77,17 +77,17 @@ To get started follow the following guides:
 &nbsp;
 
 # Contributing
-Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss encourages and welcomes code contributions, bug fixes and enhancements from the Github community.
+Peter Moss Leukaemia MedTech Research CIC encourages and welcomes code contributions, bug fixes and enhancements from the Github community.
 
-Please read the [CONTRIBUTING](CONTRIBUTING.md "CONTRIBUTING") document for a full guide to forking our repositories and submitting your pull requests. You will also find our code of conduct in the [Code of Conduct](CODE-OF-CONDUCT.md) document.
+Please read the [IOT AGENT CONTRIBUTING](https://github.com/leukaemiamedtech/contributing-guides/blob/main/CONTRIBUTING-GUIDE-IOT-AGENTS.md "IOT AGENT CONTRIBUTING") guide for a full guide to contributing to our IoT Agent projects. You will also find our code of conduct in the [CODE OF CONDUCT](https://github.com/leukaemiamedtech/contributing-guides/blob/main/CODE-OF-CONDUCT.md) document.
 
 ## Contributors
-- [Adam Milton-Barker](https://www.leukemiaairesearch.com/association/volunteers/adam-milton-barker "Adam Milton-Barker") - [Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss](https://www.leukemiaresearchassociation.ai "Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss") President/Founder & Lead Developer, Sabadell, Spain
+- [Adam Milton-Barker](https://www.leukaemiamedtechresearch.org.uk/about/volunteers/adam-milton-barker "Adam Milton-Barker") - [Peter Moss Leukaemia MedTech Research CIC](https://www.leukaemiamedtechresearch.org.uk "Peter Moss Leukaemia MedTech Research CIC") Founder & Managing Director.
 
 &nbsp;
 
 # Versioning
-We use SemVer for versioning.
+We use [SemVer](https://semver.org/) for versioning.
 
 &nbsp;
 
@@ -97,4 +97,4 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE "
 &nbsp;
 
 # Bugs/Issues
-We use the [repo issues](issues "repo issues") to track bugs and general requests related to using this project. See [CONTRIBUTING](CONTRIBUTING.md "CONTRIBUTING") for more info on how to submit bugs, feature requests and proposals.
+We use the [repo issues](https://github.com/leukaemiamedtech/hias-mqtt-iot-agent/issues/new/choose "repo issues") to track bugs and general requests related to using this project. See [IOT AGENT CONTRIBUTING](https://github.com/leukaemiamedtech/contributing-guides/blob/main/CONTRIBUTING-GUIDE-IOT-AGENTS.md "IOT AGENT CONTRIBUTING") guide for more info on how to submit bugs, feature requests and proposals.

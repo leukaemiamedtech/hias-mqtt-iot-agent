@@ -2,7 +2,7 @@
 
 ![HIAS MQTT IoT Agent](img/project-banner.jpg)
 
-[![CURRENT RELEASE](https://img.shields.io/badge/CURRENT%20RELEASE-3.1.0-blue.svg)](https://github.com/aiial/hias-mqtt-iot-agent/tree/release-3.1.0) [![UPCOMING RELEASE](https://img.shields.io/badge/DEV%20BRANCH-develop-blue.svg)](https://github.com/aiial/hias-mqtt-iot-agent/tree/develop) [![Contributions Welcome!](https://img.shields.io/badge/Contributions-Welcome-lightgrey.svg)](CONTRIBUTING.md)  [![Issues](https://img.shields.io/badge/Issues-Welcome-lightgrey.svg)](issues)
+[![CURRENT RELEASE](https://img.shields.io/badge/CURRENT%20RELEASE-4.0.0-blue.svg)](https://github.com/leukaemiamedtech/hias-mqtt-iot-agent/tree/release-4.0.0) [![UPCOMING RELEASE](https://img.shields.io/badge/DEV%20BRANCH-develop-blue.svg)](https://github.com/leukaemiamedtech/hias-mqtt-iot-agent/tree/develop) [![Contributions Welcome!](https://img.shields.io/badge/Contributions-Welcome-lightgrey.svg)](CONTRIBUTING.md)  [![Issues](https://img.shields.io/badge/Issues-Welcome-lightgrey.svg)](issues)
 
 # Introduction
 
@@ -22,7 +22,7 @@ The protocol is publish-subscribe (Pub/Sub) communication protocol that runs ove
 
 ![HIAS - Hospital Intelligent Automation Server](img/hias-network-v3.jpg)
 
-[HIAS - Hospital Intelligent Automation Server](https://github.com/aiial/HIAS-Core) is an open-source server for hospitals and medical centers, designed to control and manage a network of intelligent IoT connected devices and applications.
+[HIAS - Hospital Intelligent Automation Server](https://github.com/leukaemiamedtech/HIAS-Core) is an open-source server for hospitals and medical centers, designed to control and manage a network of intelligent IoT connected devices and applications.
 
 ## HIAS IoT Agents
 
@@ -54,24 +54,24 @@ To get started, follow the following guides:
 &nbsp;
 
 # Contributing
-Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss encourages and welcomes code contributions, bug fixes and enhancements from the Github community.
+Peter Moss Leukaemia MedTech Research CIC encourages and welcomes code contributions, bug fixes and enhancements from the Github community.
 
-Please read the [CONTRIBUTING](https://github.com/aiial/hias-mqtt-iot-agent/blob/main/CONTRIBUTING.md "CONTRIBUTING") document for a full guide to forking our repositories and submitting your pull requests. You will also find our code of conduct in the [Code of Conduct](https://github.com/aiial/hias-mqtt-iot-agent/blob/main/CODE-OF-CONDUCT.md) document.
+Please read the [IOT AGENT CONTRIBUTING](https://github.com/leukaemiamedtech/contributing-guides/blob/main/CONTRIBUTING-GUIDE-IOT-AGENTS.md "IOT AGENT CONTRIBUTING") guide for a full guide to contributing to our IoT Agent projects. You will also find our code of conduct in the [CODE OF CONDUCT](https://github.com/leukaemiamedtech/contributing-guides/blob/main/CODE-OF-CONDUCT.md) document.
 
 ## Contributors
-- [Adam Milton-Barker](https://www.leukemiaairesearch.com/association/volunteers/adam-milton-barker "Adam Milton-Barker") - [Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss](https://www.leukemiaresearchassociation.ai "Asociación de Investigacion en Inteligencia Artificial Para la Leucemia Peter Moss") President/Founder & Lead Developer, Sabadell, Spain
+- [Adam Milton-Barker](https://www.leukaemiamedtechresearch.org.uk/about/volunteers/adam-milton-barker "Adam Milton-Barker") - [Peter Moss Leukaemia MedTech Research CIC](https://www.leukaemiamedtechresearch.org.uk "Peter Moss Leukaemia MedTech Research CIC") Founder & Managing Director.
 
 &nbsp;
 
 # Versioning
-We use SemVer for versioning.
+We use [SemVer](https://semver.org/) for versioning.
 
 &nbsp;
 
 # License
-This project is licensed under the **MIT License** - see the [LICENSE](https://github.com/aiial/hias-mqtt-iot-agent/blob/main/LICENSE "LICENSE") file for details.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE "LICENSE") file for details.
 
 &nbsp;
 
 # Bugs/Issues
-We use the [repo issues](https://github.com/aiial/hias-mqtt-iot-agent/issues "repo issues") to track bugs and general requests related to using this project. See [CONTRIBUTING](https://github.com/aiial/hias-mqtt-iot-agent/CONTRIBUTING.md "CONTRIBUTING") for more info on how to submit bugs, feature requests and proposals.
+We use the [repo issues](https://github.com/leukaemiamedtech/hias-mqtt-iot-agent/issues/new/choose "repo issues") to track bugs and general requests related to using this project. See [IOT AGENT CONTRIBUTING](https://github.com/leukaemiamedtech/contributing-guides/blob/main/CONTRIBUTING-GUIDE-IOT-AGENTS.md "IOT AGENT CONTRIBUTING") guide for more info on how to submit bugs, feature requests and proposals.
